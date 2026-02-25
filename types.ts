@@ -40,6 +40,9 @@ export interface Property {
   projectedMonthlyHoa?: number;
   projectedMonthlyManagementFee?: number;
 
+  parcelId?: string;
+  countyAppraiserUrl?: string;
+
   notes?: string;
 }
 

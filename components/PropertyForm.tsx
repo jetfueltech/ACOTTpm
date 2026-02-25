@@ -83,6 +83,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
   const [projectedMonthlyHoa, setProjectedMonthlyHoa] = useState<number | ''>('');
   const [projectedMonthlyManagementFee, setProjectedMonthlyManagementFee] = useState<number | ''>('');
 
+  const [parcelId, setParcelId] = useState('');
+  const [countyAppraiserUrl, setCountyAppraiserUrl] = useState('');
+
   const [notes, setNotes] = useState('');
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +126,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
         setProjectedMonthlyHoa(propertyToEdit.projectedMonthlyHoa || '');
         setProjectedMonthlyManagementFee(propertyToEdit.projectedMonthlyManagementFee || '');
         
+        setParcelId(propertyToEdit.parcelId || '');
+        setCountyAppraiserUrl(propertyToEdit.countyAppraiserUrl || '');
+
         setNotes(propertyToEdit.notes || '');
 
       } else {
@@ -202,16 +208,19 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
       projectedMonthlyHoa: parseOptionalFloat(projectedMonthlyHoa),
       projectedMonthlyManagementFee: parseOptionalFloat(projectedMonthlyManagementFee),
       
+      parcelId: parcelId.trim() || undefined,
+      countyAppraiserUrl: countyAppraiserUrl.trim() || undefined,
+
       notes: notes.trim() || undefined,
     };
 
     if (isEditing && id) {
         const existingProperty = properties?.find(p=>p.id === id);
-        onSubmit({ 
-            ...propertyData, 
-            id, 
+        onSubmit({
+            ...propertyData,
+            id,
             imageUrl: customImageUrl.trim() || existingProperty?.imageUrl || `${DEFAULT_IMAGE_URL_BASE}/${id}/400/300`,
-            rentAmount: existingProperty?.rentAmount || 0 // Preserve existing rentAmount from state, App.tsx handles its update from lease
+            rentAmount: existingProperty?.rentAmount || 0,
         });
     } else {
       onSubmit(propertyData);
@@ -243,6 +252,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Rent amount field removed, adjusted grid */}
                 <InputField label="Bedrooms" id="bedrooms" type="number" value={bedrooms} onChange={e => setBedrooms(Math.max(0, parseInt((e.target as HTMLInputElement).value)))} required min={0} />
                 <InputField label="Bathrooms" id="bathrooms" type="number" value={bathrooms} onChange={e => setBathrooms(Math.max(0, parseFloat((e.target as HTMLInputElement).value)))} required min={0} step={0.5} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InputField label="Parcel ID (Optional)" id="parcelId" value={parcelId} onChange={e => setParcelId((e.target as HTMLInputElement).value)} placeholder="e.g., 12-34-567-890" />
+                <InputField label="County Property Appraiser Link (Optional)" id="countyAppraiserUrl" value={countyAppraiserUrl} onChange={e => setCountyAppraiserUrl((e.target as HTMLInputElement).value)} placeholder="https://..." />
             </div>
         </fieldset>
 

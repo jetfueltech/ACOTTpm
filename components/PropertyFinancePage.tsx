@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Property, Transaction, Lease, TransactionType } from '../types';
 import { INCOME_CATEGORIES, EXPENSE_CATEGORIES, formatDateForDisplay } from '../constants';
+import PropertyDocuments from './PropertyDocuments';
 
 interface PropertyFinancePageProps {
   properties: Property[];
@@ -265,6 +266,30 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
         <Link to="/properties" className="text-sm text-primary hover:text-primary-dark self-start sm:self-center whitespace-nowrap">&larr; All Properties</Link>
       </div>
 
+      {(currentProperty.parcelId || currentProperty.countyAppraiserUrl) && (
+        <div className="bg-white px-4 py-3 rounded-lg border border-neutral-200 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          {currentProperty.parcelId && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-neutral-600">Parcel ID:</span>
+              <span className="text-neutral-800">{currentProperty.parcelId}</span>
+            </div>
+          )}
+          {currentProperty.countyAppraiserUrl && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-neutral-600">County Appraiser:</span>
+              <a
+                href={currentProperty.countyAppraiserUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark hover:underline"
+              >
+                View Property Record
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         <StatCard title="YTD Actual Income" value={formatCurrency(ytdActualIncome)} subValue={`Current Month: ${formatCurrency(currentMonthActualIncome)}`} />
         <StatCard title="YTD Actual Expenses" value={formatCurrency(ytdActualExpenses)} subValue={`Current Month: ${formatCurrency(currentMonthActualExpenses)}`} />
@@ -354,6 +379,10 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
           )}
         </div>
       </div>
+      <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
+        <PropertyDocuments propertyId={currentProperty.id} />
+      </div>
+
        <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f9fafb; /* neutral-50 */ border-radius: 10px; }
