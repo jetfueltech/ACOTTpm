@@ -267,24 +267,38 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
       </div>
 
       {(currentProperty.parcelId || currentProperty.countyAppraiserUrl) && (
-        <div className="bg-white px-4 py-3 rounded-lg border border-neutral-200 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <div className="bg-white rounded-xl border border-neutral-200 px-5 py-3.5 flex flex-wrap gap-x-8 gap-y-3">
           {currentProperty.parcelId && (
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-neutral-600">Parcel ID:</span>
-              <span className="text-neutral-800">{currentProperty.parcelId}</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-100">
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">Parcel ID</p>
+                <p className="text-sm font-semibold text-neutral-800 font-mono">{currentProperty.parcelId}</p>
+              </div>
             </div>
           )}
           {currentProperty.countyAppraiserUrl && (
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-neutral-600">County Appraiser:</span>
-              <a
-                href={currentProperty.countyAppraiserUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark hover:underline"
-              >
-                View Property Record
-              </a>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-100">
+                <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">County Appraiser</p>
+                <a
+                  href={currentProperty.countyAppraiserUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
+                >
+                  View Property Record →
+                </a>
+              </div>
             </div>
           )}
         </div>
@@ -379,7 +393,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
           )}
         </div>
       </div>
-      <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
+      <div className="bg-white p-5 md:p-6 rounded-xl border border-neutral-200">
         <PropertyDocuments propertyId={currentProperty.id} />
       </div>
 

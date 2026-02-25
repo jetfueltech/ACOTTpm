@@ -7,68 +7,64 @@ import { generateId, DEFAULT_IMAGE_URL_BASE } from '../constants';
 
 interface PropertyFormProps {
   onSubmit: (property: Property | Omit<Property, 'id' | 'imageUrl' | 'rentAmount'> & { customImageUrl?: string }) => void;
-  properties?: Property[]; // For editing
+  properties?: Property[];
 }
 
-interface CustomInputFieldProps {
+type TabId = 'basics' | 'purchase' | 'loan' | 'projections' | 'media';
+
+const TABS: { id: TabId; label: string; icon: string }[] = [
+  { id: 'basics',      label: 'Property',    icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+  { id: 'purchase',    label: 'Purchase',    icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { id: 'loan',        label: 'Loan',        icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
+  { id: 'projections', label: 'Projections', icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' },
+  { id: 'media',       label: 'Media',       icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+];
+
+const inputCls = "block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors placeholder:text-neutral-400";
+const labelCls = "block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1.5";
+
+interface FieldProps {
   label: string;
   id: string;
-  type?: string;
-  value?: string | number | boolean; 
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void; 
   required?: boolean;
-  min?: number;
-  step?: number | string; 
-  children?: React.ReactNode;
-  placeholder?: string;
-  className?: string; 
-  accept?: string; // For file input
+  children: React.ReactNode;
+  hint?: string;
 }
 
-const InputField: React.FC<CustomInputFieldProps> = 
-    ({label, id, type="text", value, onChange, required=false, min, step, children, placeholder, className="", accept}) => (
-    <div className={className}>
-      <label htmlFor={id} className="block text-sm font-medium text-neutral-700 mb-1">{label}{required && <span className="text-red-500">*</span>}</label>
-      {children ? children : (
-        React.createElement(type === 'textarea' ? 'textarea' : 'input', {
-            type: type === 'textarea' ? undefined : type,
-            id: id,
-            name: id,
-            value: value,
-            onChange: onChange,
-            min: min,
-            step: step,
-            required: required,
-            placeholder: placeholder,
-            rows: type === 'textarea' ? 4 : undefined,
-            accept: accept, // For file input
-            className:"mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-        })
-      )}
-    </div>
-  );
+const Field: React.FC<FieldProps> = ({ label, id, required, children, hint }) => (
+  <div>
+    <label htmlFor={id} className={labelCls}>
+      {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+    </label>
+    {children}
+    {hint && <p className="mt-1.5 text-xs text-neutral-400">{hint}</p>}
+  </div>
+);
 
 const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id && properties);
+  const [activeTab, setActiveTab] = useState<TabId>('basics');
 
   const [address, setAddress] = useState('');
   const [type, setType] = useState<PropertyType>(PropertyType.HOUSE);
   const [bedrooms, setBedrooms] = useState<number>(1);
   const [bathrooms, setBathrooms] = useState<number>(1.0);
-  // rentAmount state removed
   const [description, setDescription] = useState('');
-  const [customImageUrl, setCustomImageUrl] = useState(''); // Stores URL or Base64 data
+  const [customImageUrl, setCustomImageUrl] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [descriptionFeatures, setDescriptionFeatures] = useState('');
-  
+
   const [squareFootage, setSquareFootage] = useState<number | ''>('');
+  const [parcelId, setParcelId] = useState('');
+  const [countyAppraiserUrl, setCountyAppraiserUrl] = useState('');
+
   const [initialInvestment, setInitialInvestment] = useState<number | ''>('');
   const [downPayment, setDownPayment] = useState<number | ''>('');
   const [purchasePrice, setPurchasePrice] = useState<number | ''>('');
   const [dateOfPurchase, setDateOfPurchase] = useState<string>(new Date().toISOString().split('T')[0]);
-  
+
   const [loanAmount, setLoanAmount] = useState<number | ''>('');
   const [loanTermYears, setLoanTermYears] = useState<number | ''>('');
   const [interestRate, setInterestRate] = useState<number | ''>('');
@@ -83,54 +79,47 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
   const [projectedMonthlyHoa, setProjectedMonthlyHoa] = useState<number | ''>('');
   const [projectedMonthlyManagementFee, setProjectedMonthlyManagementFee] = useState<number | ''>('');
 
-  const [parcelId, setParcelId] = useState('');
-  const [countyAppraiserUrl, setCountyAppraiserUrl] = useState('');
-
   const [notes, setNotes] = useState('');
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const parseOptionalFloat = (val: string | number) => val === '' ? undefined : parseFloat(val.toString()) || undefined;
+  const parseOptionalInt = (val: string | number) => val === '' ? undefined : parseInt(val.toString(), 10) || undefined;
+
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     if (isEditing && properties) {
-      const propertyToEdit = properties.find(p => p.id === id);
-      if (propertyToEdit) {
-        setAddress(propertyToEdit.address);
-        setType(propertyToEdit.type);
-        setBedrooms(propertyToEdit.bedrooms);
-        setBathrooms(propertyToEdit.bathrooms);
-        // propertyToEdit.rentAmount is not set here, it's derived from lease
-        setDescription(propertyToEdit.description);
-        if(propertyToEdit.imageUrl && !propertyToEdit.imageUrl.startsWith(DEFAULT_IMAGE_URL_BASE)) {
-          setCustomImageUrl(propertyToEdit.imageUrl);
-          setImagePreview(propertyToEdit.imageUrl); // Show existing image
+      const p = properties.find(p => p.id === id);
+      if (p) {
+        setAddress(p.address);
+        setType(p.type);
+        setBedrooms(p.bedrooms);
+        setBathrooms(p.bathrooms);
+        setDescription(p.description);
+        if (p.imageUrl && !p.imageUrl.startsWith(DEFAULT_IMAGE_URL_BASE)) {
+          setCustomImageUrl(p.imageUrl);
+          setImagePreview(p.imageUrl);
         }
-        
-        setSquareFootage(propertyToEdit.squareFootage || '');
-        setInitialInvestment(propertyToEdit.initialInvestment || '');
-        setDownPayment(propertyToEdit.downPayment || '');
-        setPurchasePrice(propertyToEdit.purchasePrice || '');
-        setDateOfPurchase(propertyToEdit.dateOfPurchase || today);
-        
-        setLoanAmount(propertyToEdit.loanAmount || '');
-        setLoanTermYears(propertyToEdit.loanTermYears || '');
-        setInterestRate(propertyToEdit.interestRate || '');
-        setMonthlyMortgage(propertyToEdit.monthlyMortgage || '');
-        setEscrowIncluded(propertyToEdit.escrowIncluded || false);
-        setLoanOriginationDate(propertyToEdit.loanOriginationDate || propertyToEdit.dateOfPurchase || today);
-
-        setProjectedMonthlyRent(propertyToEdit.projectedMonthlyRent || '');
-        setProjectedMonthlyMortgage(propertyToEdit.projectedMonthlyMortgage || '');
-        setProjectedMonthlyPropertyTaxes(propertyToEdit.projectedMonthlyPropertyTaxes || '');
-        setProjectedMonthlyInsurance(propertyToEdit.projectedMonthlyInsurance || '');
-        setProjectedMonthlyHoa(propertyToEdit.projectedMonthlyHoa || '');
-        setProjectedMonthlyManagementFee(propertyToEdit.projectedMonthlyManagementFee || '');
-        
-        setParcelId(propertyToEdit.parcelId || '');
-        setCountyAppraiserUrl(propertyToEdit.countyAppraiserUrl || '');
-
-        setNotes(propertyToEdit.notes || '');
-
+        setSquareFootage(p.squareFootage || '');
+        setParcelId(p.parcelId || '');
+        setCountyAppraiserUrl(p.countyAppraiserUrl || '');
+        setInitialInvestment(p.initialInvestment || '');
+        setDownPayment(p.downPayment || '');
+        setPurchasePrice(p.purchasePrice || '');
+        setDateOfPurchase(p.dateOfPurchase || today);
+        setLoanAmount(p.loanAmount || '');
+        setLoanTermYears(p.loanTermYears || '');
+        setInterestRate(p.interestRate || '');
+        setMonthlyMortgage(p.monthlyMortgage || '');
+        setEscrowIncluded(p.escrowIncluded || false);
+        setLoanOriginationDate(p.loanOriginationDate || p.dateOfPurchase || today);
+        setProjectedMonthlyRent(p.projectedMonthlyRent || '');
+        setProjectedMonthlyMortgage(p.projectedMonthlyMortgage || '');
+        setProjectedMonthlyPropertyTaxes(p.projectedMonthlyPropertyTaxes || '');
+        setProjectedMonthlyInsurance(p.projectedMonthlyInsurance || '');
+        setProjectedMonthlyHoa(p.projectedMonthlyHoa || '');
+        setProjectedMonthlyManagementFee(p.projectedMonthlyManagementFee || '');
+        setNotes(p.notes || '');
       } else {
         setError("Property not found.");
       }
@@ -145,29 +134,26 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setCustomImageUrl(base64String);
-        setImagePreview(base64String);
+        const b64 = reader.result as string;
+        setCustomImageUrl(b64);
+        setImagePreview(b64);
       };
       reader.readAsDataURL(file);
     } else {
-      setCustomImageUrl(''); // Clear if no file selected
+      setCustomImageUrl('');
       setImagePreview(null);
     }
   };
 
   const handleGenerateDescription = useCallback(async () => {
-    if (!descriptionFeatures.trim()) {
-      alert("Please enter some key features for the description.");
-      return;
-    }
+    if (!descriptionFeatures.trim()) { alert("Please enter some key features."); return; }
     setIsGeneratingDesc(true);
     setError(null);
     try {
-      const generatedDesc = await generatePropertyDescription(descriptionFeatures);
-      setDescription(generatedDesc);
+      const generated = await generatePropertyDescription(descriptionFeatures);
+      setDescription(generated);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred during description generation.");
+      setError(err instanceof Error ? err.message : "Description generation failed.");
     } finally {
       setIsGeneratingDesc(false);
     }
@@ -175,193 +161,325 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!address.trim() || bedrooms <=0 || bathrooms <=0) { // RentAmount removed from validation
-        setError("Please fill in all required fields (Address, Bedrooms, Bathrooms). Room counts must be positive.");
-        return;
+    if (!address.trim() || bedrooms <= 0 || bathrooms <= 0) {
+      setError("Address, Bedrooms, and Bathrooms are required. Room counts must be positive.");
+      setActiveTab('basics');
+      return;
     }
     setError(null);
 
     const propertyData = {
-      address, type, bedrooms, bathrooms, 
-      // rentAmount is not part of form data anymore
+      address, type, bedrooms, bathrooms,
       description: description || "A nice property.",
       customImageUrl: customImageUrl.trim() || undefined,
-      tenantId: isEditing ? (properties?.find(p=>p.id === id)?.tenantId) : null,
-
+      tenantId: isEditing ? (properties?.find(p => p.id === id)?.tenantId) : null,
       squareFootage: parseOptionalFloat(squareFootage),
+      parcelId: parcelId.trim() || undefined,
+      countyAppraiserUrl: countyAppraiserUrl.trim() || undefined,
       initialInvestment: parseOptionalFloat(initialInvestment),
       downPayment: parseOptionalFloat(downPayment),
       purchasePrice: parseOptionalFloat(purchasePrice),
       dateOfPurchase: dateOfPurchase || undefined,
-      
       loanAmount: parseOptionalFloat(loanAmount),
       loanTermYears: parseOptionalInt(loanTermYears),
       interestRate: parseOptionalFloat(interestRate),
       monthlyMortgage: parseOptionalFloat(monthlyMortgage),
       escrowIncluded,
       loanOriginationDate: loanOriginationDate || dateOfPurchase || undefined,
-
       projectedMonthlyRent: parseOptionalFloat(projectedMonthlyRent),
       projectedMonthlyMortgage: parseOptionalFloat(projectedMonthlyMortgage),
       projectedMonthlyPropertyTaxes: parseOptionalFloat(projectedMonthlyPropertyTaxes),
       projectedMonthlyInsurance: parseOptionalFloat(projectedMonthlyInsurance),
       projectedMonthlyHoa: parseOptionalFloat(projectedMonthlyHoa),
       projectedMonthlyManagementFee: parseOptionalFloat(projectedMonthlyManagementFee),
-      
-      parcelId: parcelId.trim() || undefined,
-      countyAppraiserUrl: countyAppraiserUrl.trim() || undefined,
-
       notes: notes.trim() || undefined,
     };
 
     if (isEditing && id) {
-        const existingProperty = properties?.find(p=>p.id === id);
-        onSubmit({
-            ...propertyData,
-            id,
-            imageUrl: customImageUrl.trim() || existingProperty?.imageUrl || `${DEFAULT_IMAGE_URL_BASE}/${id}/400/300`,
-            rentAmount: existingProperty?.rentAmount || 0,
-        });
+      const existing = properties?.find(p => p.id === id);
+      onSubmit({
+        ...propertyData,
+        id,
+        imageUrl: customImageUrl.trim() || existing?.imageUrl || `${DEFAULT_IMAGE_URL_BASE}/${id}/400/300`,
+        rentAmount: existing?.rentAmount || 0,
+      });
     } else {
       onSubmit(propertyData);
     }
     navigate('/properties');
   };
-  
-  const parseOptionalFloat = (val: string | number) => val === '' ? undefined : parseFloat(val.toString()) || undefined;
-  const parseOptionalInt = (val: string | number) => val === '' ? undefined : parseInt(val.toString(), 10) || undefined;
-
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl border border-neutral-300 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold text-neutral-800 mb-6">{isEditing ? 'Edit Property' : 'Add New Property'}</h2>
-      {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-neutral-900">
+          {isEditing ? 'Edit Property' : 'Add New Property'}
+        </h2>
+        <p className="text-sm text-neutral-500 mt-1">
+          {isEditing ? 'Update the details for this property.' : 'Fill in the details to add a new property to your portfolio.'}
+        </p>
+      </div>
 
-        <fieldset className="space-y-6 border border-neutral-200 p-4 rounded-md">
-            <legend className="text-lg font-medium text-neutral-700 px-2">Basic Property Details</legend>
-            <InputField label="Address" id="address" value={address} onChange={e => setAddress((e.target as HTMLInputElement).value)} required />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Property Type" id="type" required value={type} onChange={e => setType((e.target as HTMLSelectElement).value as PropertyType)}>
-                    <select id="type" name="type" value={type} onChange={e => setType(e.target.value as PropertyType)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                        {Object.values(PropertyType).map(pt => <option key={pt} value={pt}>{pt}</option>)}
+      {error && (
+        <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+          <svg className="h-4 w-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {error}
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-card overflow-hidden">
+        <div className="flex overflow-x-auto border-b border-neutral-200 bg-neutral-50/60">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors focus:outline-none
+                ${activeTab === tab.id
+                  ? 'border-primary text-primary bg-white'
+                  : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:bg-white/60'
+                }`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d={tab.icon} />
+              </svg>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="p-6 space-y-5">
+
+            {activeTab === 'basics' && (
+              <>
+                <Field label="Street Address" id="address" required>
+                  <input id="address" type="text" className={inputCls} value={address} onChange={e => setAddress(e.target.value)} placeholder="123 Main Street, City, State" required />
+                </Field>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Property Type" id="type">
+                    <select id="type" className={inputCls} value={type} onChange={e => setType(e.target.value as PropertyType)}>
+                      {Object.values(PropertyType).map(pt => <option key={pt} value={pt}>{pt}</option>)}
                     </select>
-                </InputField>
-                 <InputField label="Square Footage (Optional)" id="squareFootage" type="number" value={squareFootage} onChange={e => setSquareFootage(parseOptionalInt((e.target as HTMLInputElement).value) ?? '')} min={0} step="1" placeholder="e.g., 1200" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Rent amount field removed, adjusted grid */}
-                <InputField label="Bedrooms" id="bedrooms" type="number" value={bedrooms} onChange={e => setBedrooms(Math.max(0, parseInt((e.target as HTMLInputElement).value)))} required min={0} />
-                <InputField label="Bathrooms" id="bathrooms" type="number" value={bathrooms} onChange={e => setBathrooms(Math.max(0, parseFloat((e.target as HTMLInputElement).value)))} required min={0} step={0.5} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Parcel ID (Optional)" id="parcelId" value={parcelId} onChange={e => setParcelId((e.target as HTMLInputElement).value)} placeholder="e.g., 12-34-567-890" />
-                <InputField label="County Property Appraiser Link (Optional)" id="countyAppraiserUrl" value={countyAppraiserUrl} onChange={e => setCountyAppraiserUrl((e.target as HTMLInputElement).value)} placeholder="https://..." />
-            </div>
-        </fieldset>
-
-        <fieldset className="space-y-6 border border-neutral-200 p-4 rounded-md">
-            <legend className="text-lg font-medium text-neutral-700 px-2">Purchase & Investment (Optional)</legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Purchase Price" id="purchasePrice" type="number" value={purchasePrice} onChange={e => setPurchasePrice(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 250000"/>
-                <InputField label="Date of Purchase" id="dateOfPurchase" type="date" value={dateOfPurchase} onChange={e => setDateOfPurchase((e.target as HTMLInputElement).value)} />
-            </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Initial Cash Investment" id="initialInvestment" type="number" value={initialInvestment} onChange={e => setInitialInvestment(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="Down payment + closing costs"/>
-                <InputField label="Down Payment" id="downPayment" type="number" value={downPayment} onChange={e => setDownPayment(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 25000"/>
-            </div>
-        </fieldset>
-        
-        <fieldset className="space-y-6 border border-neutral-200 p-4 rounded-md">
-            <legend className="text-lg font-medium text-neutral-700 px-2">Loan Details (Optional)</legend>
-            <InputField label="Loan Origination Date" id="loanOriginationDate" type="date" value={loanOriginationDate} onChange={e => setLoanOriginationDate((e.target as HTMLInputElement).value)} />
-             <p className="text-xs text-neutral-500 -mt-5">Defaults to Purchase Date if empty. Important for amortization.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Initial Loan Amount" id="loanAmount" type="number" value={loanAmount} onChange={e => setLoanAmount(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 200000"/>
-                <InputField label="Loan Term (Years)" id="loanTermYears" type="number" value={loanTermYears} onChange={e => setLoanTermYears(parseOptionalInt((e.target as HTMLInputElement).value) ?? '')} min={0} step="1" placeholder="e.g., 30"/>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                <InputField label="Interest Rate (%)" id="interestRate" type="number" value={interestRate} onChange={e => setInterestRate(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 3.5"/>
-                <div>
-                  <InputField label="Actual Monthly P&I Payment" id="monthlyMortgage" type="number" value={monthlyMortgage} onChange={e => setMonthlyMortgage(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 1200"/>
-                  {escrowIncluded && (
-                    <p className="text-xs text-neutral-500 mt-1">This is for Principal & Interest (P&I) only. When logging transactions, enter the full PITI payment (including escrow) as the 'Mortgage Payment' amount. P&I entered here is used for amortization. Projections for taxes & insurance are for reference.</p>
-                  )}
+                  </Field>
+                  <Field label="Square Footage" id="squareFootage">
+                    <input id="squareFootage" type="number" className={inputCls} value={squareFootage} onChange={e => setSquareFootage(parseOptionalInt(e.target.value) ?? '')} min={0} placeholder="e.g., 1,400" />
+                  </Field>
                 </div>
-                 <InputField label="Escrow Included in Total Pmt?" id="escrowIncluded" value={escrowIncluded ? 'yes' : 'no'} onChange={e => setEscrowIncluded((e.target as HTMLSelectElement).value === 'yes')}>
-                    <select id="escrowIncluded" name="escrowIncluded" value={escrowIncluded ? 'yes' : 'no'} onChange={e => setEscrowIncluded((e.target as HTMLSelectElement).value === 'yes')} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                        <option value="no">No</option>
-                        <option value="yes">Yes</option>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Bedrooms" id="bedrooms" required>
+                    <input id="bedrooms" type="number" className={inputCls} value={bedrooms} onChange={e => setBedrooms(Math.max(0, parseInt(e.target.value)))} min={0} required />
+                  </Field>
+                  <Field label="Bathrooms" id="bathrooms" required>
+                    <input id="bathrooms" type="number" className={inputCls} value={bathrooms} onChange={e => setBathrooms(Math.max(0, parseFloat(e.target.value)))} min={0} step={0.5} required />
+                  </Field>
+                </div>
+
+                <div className="pt-2 border-t border-neutral-100">
+                  <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-3">Public Records</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field label="Parcel ID" id="parcelId">
+                      <input id="parcelId" type="text" className={inputCls} value={parcelId} onChange={e => setParcelId(e.target.value)} placeholder="e.g., 12-34-567-890" />
+                    </Field>
+                    <Field label="County Appraiser URL" id="countyAppraiserUrl">
+                      <input id="countyAppraiserUrl" type="url" className={inputCls} value={countyAppraiserUrl} onChange={e => setCountyAppraiserUrl(e.target.value)} placeholder="https://..." />
+                    </Field>
+                  </div>
+                </div>
+
+                <Field label="Internal Notes" id="notes">
+                  <textarea id="notes" rows={3} className={inputCls} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any private notes about this property..." />
+                </Field>
+              </>
+            )}
+
+            {activeTab === 'purchase' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Purchase Price" id="purchasePrice">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="purchasePrice" type="number" className={`${inputCls} pl-7`} value={purchasePrice} onChange={e => setPurchasePrice(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                  <Field label="Date of Purchase" id="dateOfPurchase">
+                    <input id="dateOfPurchase" type="date" className={inputCls} value={dateOfPurchase} onChange={e => setDateOfPurchase(e.target.value)} />
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Down Payment" id="downPayment">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="downPayment" type="number" className={`${inputCls} pl-7`} value={downPayment} onChange={e => setDownPayment(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                  <Field label="Total Initial Cash Investment" id="initialInvestment" hint="Down payment + closing costs + any upfront repairs">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="initialInvestment" type="number" className={`${inputCls} pl-7`} value={initialInvestment} onChange={e => setInitialInvestment(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'loan' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Loan Origination Date" id="loanOriginationDate" hint="Defaults to purchase date if left blank">
+                    <input id="loanOriginationDate" type="date" className={inputCls} value={loanOriginationDate} onChange={e => setLoanOriginationDate(e.target.value)} />
+                  </Field>
+                  <Field label="Initial Loan Amount" id="loanAmount">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="loanAmount" type="number" className={`${inputCls} pl-7`} value={loanAmount} onChange={e => setLoanAmount(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <Field label="Interest Rate" id="interestRate">
+                    <div className="relative">
+                      <input id="interestRate" type="number" className={`${inputCls} pr-7`} value={interestRate} onChange={e => setInterestRate(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
+                    </div>
+                  </Field>
+                  <Field label="Loan Term" id="loanTermYears">
+                    <div className="relative">
+                      <input id="loanTermYears" type="number" className={`${inputCls} pr-14`} value={loanTermYears} onChange={e => setLoanTermYears(parseOptionalInt(e.target.value) ?? '')} min={0} placeholder="30" />
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">yrs</span>
+                    </div>
+                  </Field>
+                  <Field label="Escrow Included?" id="escrowIncluded">
+                    <select id="escrowIncluded" className={inputCls} value={escrowIncluded ? 'yes' : 'no'} onChange={e => setEscrowIncluded(e.target.value === 'yes')}>
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
                     </select>
-                </InputField>
-            </div>
-        </fieldset>
+                  </Field>
+                </div>
+                <Field label="Monthly P&I Payment" id="monthlyMortgage" hint={escrowIncluded ? "Enter Principal & Interest only. Log full PITI payments as transactions. This figure is used for amortization tracking." : undefined}>
+                  <div className="relative max-w-xs">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                    <input id="monthlyMortgage" type="number" className={`${inputCls} pl-7`} value={monthlyMortgage} onChange={e => setMonthlyMortgage(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                  </div>
+                </Field>
+              </>
+            )}
 
-         <fieldset className="space-y-6 border border-neutral-200 p-4 rounded-md">
-            <legend className="text-lg font-medium text-neutral-700 px-2">Financial Projections (Optional)</legend>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Projected Monthly Rent" id="projectedMonthlyRent" type="number" value={projectedMonthlyRent} onChange={e => setProjectedMonthlyRent(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 2000"/>
-                <InputField label="Projected Monthly Mortgage (P&I)" id="projectedMonthlyMortgage" type="number" value={projectedMonthlyMortgage} onChange={e => setProjectedMonthlyMortgage(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 1150"/>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <InputField label="Projected Monthly Property Taxes" id="projectedMonthlyPropertyTaxes" type="number" value={projectedMonthlyPropertyTaxes} onChange={e => setProjectedMonthlyPropertyTaxes(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 250"/>
-                 <InputField label="Projected Monthly Insurance" id="projectedMonthlyInsurance" type="number" value={projectedMonthlyInsurance} onChange={e => setProjectedMonthlyInsurance(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 80"/>
-            </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <InputField label="Projected Monthly HOA Dues" id="projectedMonthlyHoa" type="number" value={projectedMonthlyHoa} onChange={e => setProjectedMonthlyHoa(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 50"/>
-                 <InputField label="Projected Monthly Management Fee" id="projectedMonthlyManagementFee" type="number" value={projectedMonthlyManagementFee} onChange={e => setProjectedMonthlyManagementFee(parseOptionalFloat((e.target as HTMLInputElement).value) ?? '')} min={0} step="0.01" placeholder="e.g., 200 (if 10% of rent)"/>
-            </div>
-        </fieldset>
+            {activeTab === 'projections' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Projected Monthly Rent" id="projectedMonthlyRent">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyRent" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyRent} onChange={e => setProjectedMonthlyRent(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                  <Field label="Projected Monthly Mortgage" id="projectedMonthlyMortgage">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyMortgage" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyMortgage} onChange={e => setProjectedMonthlyMortgage(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Projected Property Taxes /mo" id="projectedMonthlyPropertyTaxes">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyPropertyTaxes" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyPropertyTaxes} onChange={e => setProjectedMonthlyPropertyTaxes(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                  <Field label="Projected Insurance /mo" id="projectedMonthlyInsurance">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyInsurance" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyInsurance} onChange={e => setProjectedMonthlyInsurance(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Projected HOA Dues /mo" id="projectedMonthlyHoa">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyHoa" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyHoa} onChange={e => setProjectedMonthlyHoa(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                  <Field label="Projected Management Fee /mo" id="projectedMonthlyManagementFee">
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">$</span>
+                      <input id="projectedMonthlyManagementFee" type="number" className={`${inputCls} pl-7`} value={projectedMonthlyManagementFee} onChange={e => setProjectedMonthlyManagementFee(parseOptionalFloat(e.target.value) ?? '')} min={0} step="0.01" placeholder="0.00" />
+                    </div>
+                  </Field>
+                </div>
+              </>
+            )}
 
-        <fieldset className="space-y-6 border border-neutral-200 p-4 rounded-md">
-            <legend className="text-lg font-medium text-neutral-700 px-2">Media & Description</legend>
-            <InputField label="Custom Image URL (Optional)" id="customImageUrl" value={customImageUrl.startsWith('data:image') ? '' : customImageUrl} onChange={e => {setCustomImageUrl((e.target as HTMLInputElement).value); setImagePreview(null);}} placeholder="https://example.com/image.jpg" />
-            {/* This input allows uploading an image which will become the property's cover image. */}
-            <InputField label="Upload New Cover Image (Optional)" id="imageFile" type="file" accept="image/*" onChange={handleImageFileChange} />
-            {imagePreview && <img src={imagePreview} alt="Preview" className="mt-2 rounded-md max-h-40 object-contain" />}
-            <p className="text-xs text-neutral-500 -mt-5">URL or Upload. Uploaded images are stored as Base64, be mindful of localStorage limits (typically 5-10MB total).</p>
+            {activeTab === 'media' && (
+              <>
+                <Field label="Image URL" id="customImageUrl">
+                  <input id="customImageUrl" type="text" className={inputCls} value={customImageUrl.startsWith('data:image') ? '' : customImageUrl} onChange={e => { setCustomImageUrl(e.target.value); setImagePreview(null); }} placeholder="https://example.com/photo.jpg" />
+                </Field>
 
-            <div>
-              <label htmlFor="descriptionFeatures" className="block text-sm font-medium text-neutral-700 mb-1">Key Features for AI Description (Optional)</label>
-              <textarea
-                id="descriptionFeatures"
-                name="descriptionFeatures"
-                rows={3}
-                value={descriptionFeatures}
-                onChange={e => setDescriptionFeatures(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                placeholder="e.g., newly renovated kitchen, spacious backyard, great natural light, pet-friendly"
-              />
-              <button
-                type="button"
-                onClick={handleGenerateDescription}
-                disabled={isGeneratingDesc}
-                className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-dark disabled:bg-neutral-300"
-              >
-                {isGeneratingDesc ? <LoadingSpinner size="sm" /> : <span className="mr-2" role="img" aria-label="Sparkles">✨</span>}
-                Generate Description with AI
+                <Field label="Upload Cover Photo" id="imageFile" hint="Uploaded images are stored as Base64 in your browser's local storage.">
+                  <div className="mt-1">
+                    <label htmlFor="imageFile" className="flex items-center gap-3 px-4 py-3 border border-dashed border-neutral-300 rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors group">
+                      <svg className="h-5 w-5 text-neutral-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      <span className="text-sm text-neutral-500 group-hover:text-neutral-700">Click to choose a photo</span>
+                    </label>
+                    <input id="imageFile" type="file" accept="image/*" className="sr-only" onChange={handleImageFileChange} />
+                  </div>
+                </Field>
+
+                {imagePreview && (
+                  <div className="relative rounded-lg overflow-hidden border border-neutral-200 aspect-video">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => { setImagePreview(null); setCustomImageUrl(''); }} className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                )}
+
+                <div className="pt-2 border-t border-neutral-100">
+                  <Field label="Key Features for AI Description" id="descriptionFeatures">
+                    <textarea id="descriptionFeatures" rows={3} className={inputCls} value={descriptionFeatures} onChange={e => setDescriptionFeatures(e.target.value)} placeholder="e.g., newly renovated kitchen, spacious backyard, great natural light, pet-friendly" />
+                  </Field>
+                  <button type="button" onClick={handleGenerateDescription} disabled={isGeneratingDesc} className="mt-2.5 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-secondary text-secondary hover:bg-secondary hover:text-white transition-colors disabled:opacity-40">
+                    {isGeneratingDesc ? <LoadingSpinner size="sm" /> : (
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    )}
+                    Generate with AI
+                  </button>
+                </div>
+
+                <Field label="Property Description" id="description" required>
+                  <textarea id="description" rows={5} className={inputCls} value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe this property for listings and internal records..." required />
+                </Field>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between px-6 py-4 bg-neutral-50/60 border-t border-neutral-200">
+            <div className="flex gap-1">
+              {TABS.map((tab, i) => (
+                <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+                  className={`w-2 h-2 rounded-full transition-colors ${activeTab === tab.id ? 'bg-primary' : 'bg-neutral-300 hover:bg-neutral-400'}`}
+                  aria-label={`Go to ${tab.label}`}
+                />
+              ))}
+            </div>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => navigate('/properties')} className="px-4 py-2 text-sm font-medium text-neutral-600 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+                Cancel
+              </button>
+              <button type="submit" className="px-5 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors shadow-sm">
+                {isEditing ? 'Save Changes' : 'Add Property'}
               </button>
             </div>
-
-            <InputField label="Property Description" id="description" type="textarea" value={description} onChange={e => setDescription((e.target as HTMLTextAreaElement).value)} required placeholder="Detailed description of the property."/>
-             <InputField label="Notes (Optional)" id="notes" type="textarea" value={notes} onChange={e => setNotes((e.target as HTMLTextAreaElement).value)} placeholder="Any internal notes about the property..." />
-        </fieldset>
-
-        <div className="flex items-center justify-end space-x-3 pt-4">
-          <button
-            type="button"
-            onClick={() => navigate('/properties')}
-            className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark"
-          >
-            {isEditing ? 'Save Changes' : 'Add Property'}
-          </button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
