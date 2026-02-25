@@ -1,6 +1,7 @@
 import React from 'react';
 import { TodoItem, Property, TodoPriority } from '../types';
-import { formatDateForDisplay } from '../constants'; 
+import { formatDateForDisplay } from '../constants';
+import { TrashIcon, EditIcon, BuildingIcon } from './icons';
 
 interface TodoItemCardProps {
   todoItem: TodoItem;
@@ -26,7 +27,7 @@ const TodoItemCard: React.FC<TodoItemCardProps> = ({ todoItem, properties, onTog
 
   return (
     <div className={`p-4 rounded-lg border flex items-start space-x-3 transition-all duration-300
-                    ${todoItem.isCompleted ? 'bg-neutral-50 opacity-70 border-neutral-200' : 'bg-white hover:bg-neutral-50 border-neutral-200'} 
+                    ${todoItem.isCompleted ? 'bg-neutral-50 opacity-70 border-neutral-200' : 'bg-white hover:bg-neutral-50 border-neutral-200'}
                     border-l-4 ${priorityStyles.borderColor}`}>
       <input
         type="checkbox"
@@ -48,7 +49,7 @@ const TodoItemCard: React.FC<TodoItemCardProps> = ({ todoItem, properties, onTog
           </p>
           {linkedProperty && (
             <p className="flex items-center">
-              <span className="mr-1 text-sm" role="img" aria-label="Property">🏢</span>
+              <BuildingIcon className="h-3.5 w-3.5 mr-1" />
               <span>{linkedProperty.address}</span>
             </p>
           )}
@@ -61,17 +62,18 @@ const TodoItemCard: React.FC<TodoItemCardProps> = ({ todoItem, properties, onTog
       <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 shrink-0">
         <button
           onClick={() => onEdit(todoItem.id)}
-          className="px-2 py-1 text-xs font-medium text-secondary hover:text-secondary-dark rounded-md hover:bg-secondary-light/20 transition-colors"
+          className="px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:text-primary rounded-lg hover:bg-neutral-100 transition-colors flex items-center gap-1.5"
           aria-label={`Edit task ${todoItem.text}`}
         >
+          <EditIcon className="h-3.5 w-3.5" />
           Edit
         </button>
         <button
           onClick={() => { if(window.confirm(`Are you sure you want to delete task: "${todoItem.text}"?`)) onDelete(todoItem.id)}}
-          className="p-1.5 text-red-500 hover:text-red-700 rounded-md hover:bg-red-100 transition-colors text-lg"
+          className="p-1.5 text-neutral-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
           aria-label={`Delete task ${todoItem.text}`}
         >
-          <span role="img" aria-label="Delete">🗑️</span>
+          <TrashIcon className="h-4 w-4" />
         </button>
       </div>
     </div>

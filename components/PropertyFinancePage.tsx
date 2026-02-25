@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Property, Transaction, Lease, TransactionType } from '../types';
 import { INCOME_CATEGORIES, EXPENSE_CATEGORIES, formatDateForDisplay } from '../constants';
 import PropertyDocuments from './PropertyDocuments';
+import { BuildingIcon, ChevronDownIcon } from './icons';
 
 interface PropertyFinancePageProps {
   properties: Property[];
@@ -10,17 +11,12 @@ interface PropertyFinancePageProps {
   leases: Lease[]; 
 }
 
-const StatCard: React.FC<{ title: string; value: string | number; subValue?: string; icon?: string; small?: boolean; className?: string }> = 
-  ({ title, value, subValue, icon, small, className }) => (
-  <div className={`bg-white p-3 md:p-4 rounded-lg border border-neutral-200 ${small ? 'col-span-1' : 'col-span-1'} ${className}`}>
-    <div className="flex items-center justify-between">
-      <div>
-        <p className={`text-xs font-medium text-neutral-500 uppercase ${small ? 'mb-0.5' : 'mb-1'}`}>{title}</p>
-        <p className={`font-bold text-neutral-800 ${small ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`}>{value}</p>
-        {subValue && <p className="text-xs text-neutral-500 break-words">{subValue}</p>}
-      </div>
-      {icon && <div className={`p-2 rounded-full text-xl ${small ? 'bg-transparent text-primary shrink-0' : 'bg-primary-light text-primary-dark shrink-0'}`}><span role="img" aria-label={title}>{icon}</span></div>}
-    </div>
+const StatCard: React.FC<{ title: string; value: string | number; subValue?: string; small?: boolean; className?: string }> =
+  ({ title, value, subValue, small, className }) => (
+  <div className={`bg-white p-3 md:p-4 rounded-xl border border-neutral-200/80 ${className || ''}`}>
+    <p className={`text-xs font-medium text-neutral-500 uppercase tracking-wider ${small ? 'mb-0.5' : 'mb-1'}`}>{title}</p>
+    <p className={`font-bold text-neutral-900 ${small ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`}>{value}</p>
+    {subValue && <p className="text-xs text-neutral-400 break-words mt-0.5">{subValue}</p>}
   </div>
 );
 
@@ -229,8 +225,10 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
   if (!currentProperty) {
     return (
       <div className="text-center py-10">
-        <span className="text-5xl" role="img" aria-label="Building">🏢</span>
-        <h3 className="mt-2 text-xl font-medium text-neutral-700">Property not found</h3>
+        <div className="mx-auto w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
+          <BuildingIcon className="h-6 w-6 text-neutral-400" />
+        </div>
+        <h3 className="text-xl font-medium text-neutral-700">Property not found</h3>
         <p className="mt-1 text-sm text-neutral-500">The property you are looking for does not exist or has been removed.</p>
         <Link to="/properties" className="mt-6 inline-block text-primary hover:text-primary-dark">&larr; Back to Properties</Link>
       </div>
@@ -333,7 +331,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
             aria-controls="projections-content"
         >
           <span>YTD Projections vs Actuals ({new Date().getFullYear()})</span>
-          <span className={`transform transition-transform duration-200 ${isProjectionsOpen ? 'rotate-180' : ''}`} role="img" aria-label="Toggle projections">🔽</span>
+          <ChevronDownIcon className={`h-4 w-4 text-neutral-500 transform transition-transform duration-200 ${isProjectionsOpen ? 'rotate-180' : ''}`} />
         </button>
         {isProjectionsOpen && (
             <div id="projections-content" className="space-y-1">

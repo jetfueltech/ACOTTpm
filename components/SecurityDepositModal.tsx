@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lease, Property, Tenant, SecurityDepositTransaction, SecurityDepositTransactionType, OptionType } from '../types';
 import { formatDateForDisplay } from '../constants';
+import { PlusIcon, TrashIcon, XMarkIcon } from './icons';
 
 interface SecurityDepositModalProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ const InputField: React.FC<{
         id: id, name: id, value: value, onChange: onChange, required: required,
         placeholder: placeholder, min: min, step: step,
         rows: type === 'textarea' ? 3 : undefined,
-        className: "mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+        className: "mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
       })
     )}
   </div>
@@ -86,33 +87,35 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
     setDate(new Date().toISOString().split('T')[0]);
     setNotes('');
     // Optionally close modal on successful add, or keep open to add more
-    // onClose(); 
+    // onClose();
   };
-  
+
   const formatCurrency = (num: number | undefined) => num ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num) : 'N/A';
-  
+
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-neutral-800">Manage Security Deposits</h2>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-700 text-2xl">&times;</button>
+          <button onClick={onClose} className="p-1 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100 transition-colors">
+            <XMarkIcon className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="mb-4 p-3 bg-neutral-50 rounded-md border border-neutral-200 text-sm">
             <p><strong>Lease:</strong> {property?.address || 'N/A'} - {tenant?.name || 'N/A'}</p>
             <p><strong>Agreed Deposit:</strong> {formatCurrency(lease.securityDepositAmount)}</p>
         </div>
-        
+
         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-4">
             {/* Form to Add New Security Deposit Transaction */}
-            <form onSubmit={handleSubmit} className="p-4 border border-primary-light rounded-md bg-primary-light/10">
+            <form onSubmit={handleSubmit} className="p-4 border border-neutral-200 rounded-xl bg-primary-light/10">
                 <h3 className="text-md font-semibold text-neutral-700 mb-3">Log New Deposit Transaction</h3>
                 {error && <p className="mb-2 text-xs text-red-600 bg-red-100 p-2 rounded">{error}</p>}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField label="Transaction Type" id="sdt-type" value={type} onChange={e => setType(e.target.value as SecurityDepositTransactionType)} required>
-                        <select id="sdt-type" value={type} onChange={e => setType(e.target.value as SecurityDepositTransactionType)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                        <select id="sdt-type" value={type} onChange={e => setType(e.target.value as SecurityDepositTransactionType)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
                         {Object.values(SecurityDepositTransactionType).map(tVal => (
                             <option key={tVal} value={tVal}>{tVal.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}</option>
                         ))}
@@ -124,8 +127,8 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
                     <InputField label="Date" id="sdt-date" type="date" value={date} onChange={e => setDate((e.target as HTMLInputElement).value)} required />
                      <InputField label="Notes (Optional)" id="sdt-notes" type="text" value={notes} onChange={e => setNotes((e.target as HTMLInputElement).value)} placeholder="e.g., Initial collection, Partial refund" />
                 </div>
-                <button type="submit" className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark">
-                    <span className="mr-2" role="img" aria-label="Add">➕</span> Log Transaction
+                <button type="submit" className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">
+                    <PlusIcon className="h-4 w-4" /> Log Transaction
                 </button>
             </form>
 
@@ -140,17 +143,17 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
                     <li key={sdt.id} className="py-2.5 flex justify-between items-center text-sm">
                         <div>
                         <p className="font-medium text-neutral-700">
-                            {sdt.type.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}: <span className={sdt.type === SecurityDepositTransactionType.COLLECTED ? 'text-green-600' : (sdt.type === SecurityDepositTransactionType.REFUNDED ? 'text-orange-600' : 'text-indigo-600')}>{formatCurrency(sdt.amount)}</span>
+                            {sdt.type.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}: <span className={sdt.type === SecurityDepositTransactionType.COLLECTED ? 'text-green-600' : (sdt.type === SecurityDepositTransactionType.REFUNDED ? 'text-orange-600' : 'text-primary')}>{formatCurrency(sdt.amount)}</span>
                         </p>
                         <p className="text-xs text-neutral-500">Date: {formatDateForDisplay(sdt.date)}</p>
                         {sdt.notes && <p className="text-xs text-neutral-500 italic">Notes: {sdt.notes}</p>}
                         </div>
                         <button
                         onClick={() => { if(window.confirm('Are you sure you want to delete this deposit transaction?')) deleteSecurityDepositTransaction(sdt.id) }}
-                        className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-100 transition-colors text-lg"
+                        className="p-1.5 text-neutral-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
                         aria-label="Delete deposit transaction"
                         >
-                        <span role="img" aria-label="Delete">🗑️</span>
+                        <TrashIcon className="h-4 w-4" />
                         </button>
                     </li>
                     ))}

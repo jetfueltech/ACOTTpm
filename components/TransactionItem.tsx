@@ -1,6 +1,7 @@
 import React from 'react';
 import { Transaction, TransactionType, Property } from '../types';
 import { formatDateForDisplay } from '../constants';
+import { TrashIcon } from './icons';
 
 interface TransactionItemProps {
   transaction: Transaction; // Expects category to be the display label
@@ -22,11 +23,11 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, properti
         <div className="md:col-span-1 text-sm text-neutral-600">{formatDateForDisplay(transaction.date)}</div>
         <div className="md:col-span-2">
           {/* Display description first if available, otherwise category */}
-          <p className="font-medium text-neutral-800">{transaction.description || transaction.category}</p> 
+          <p className="font-medium text-neutral-800">{transaction.description || transaction.category}</p>
           {/* Show property address and category (if description was primary) */}
           <p className="text-xs text-neutral-500">
             {propertyAddress}
-            {transaction.description && transaction.category ? ` - ${transaction.category}` : ''} 
+            {transaction.description && transaction.category ? ` - ${transaction.category}` : ''}
           </p>
         </div>
         <div className={`md:col-span-1 font-semibold text-right md:text-left ${transaction.type === TransactionType.INCOME ? 'text-green-600' : 'text-red-600'}`}>
@@ -34,15 +35,15 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, properti
         </div>
         <div className="col-span-2 md:col-span-1 text-xs text-neutral-500 md:text-left truncate hidden md:block">
             {/* Display category here if description was primary, or description if it wasn't */}
-            {transaction.description ? transaction.category : transaction.description } 
+            {transaction.description ? transaction.category : transaction.description }
         </div>
         <div className="md:col-span-1 flex justify-end">
           <button
             onClick={() => { if(window.confirm('Are you sure you want to delete this transaction?')) onDelete(transaction.id) }}
-            className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-100 transition-colors text-xl"
+            className="p-1.5 text-neutral-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
             aria-label="Delete transaction"
           >
-            <span role="img" aria-label="Delete">🗑️</span>
+            <TrashIcon className="h-4 w-4" />
           </button>
         </div>
       </div>

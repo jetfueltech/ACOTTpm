@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Property, Tenant, Transaction, Lease, NavItem, PropertyType, TransactionType, SecurityDepositTransaction, SecurityDepositTransactionType, TodoItem } from './types';
-import { DEFAULT_IMAGE_URL_BASE, generateId, INCOME_CATEGORIES } from './constants'; 
+import { DEFAULT_IMAGE_URL_BASE, generateId, INCOME_CATEGORIES } from './constants';
 import DashboardPage from './components/DashboardPage';
 import PropertiesPage from './components/PropertiesPage';
 import PropertyForm from './components/PropertyForm';
@@ -12,7 +12,8 @@ import FinancialsPage from './components/FinancialsPage';
 import PropertyFinancePage from './components/PropertyFinancePage';
 import LeasesPage from './components/LeasesPage';
 import LeaseForm from './components/LeaseForm';
-import TodoPage from './components/TodoPage'; 
+import TodoPage from './components/TodoPage';
+import { HomeIcon, BuildingIcon, UsersIcon, DocumentIcon, DollarIcon, ChecklistIcon, ChevronLeftIcon, ChevronRightIcon, MenuIcon } from './components/icons';
 
 const App: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -339,51 +340,66 @@ const App: React.FC = () => {
   }, []);
 
 
+  const navIconMap: Record<string, React.FC<{className?: string}>> = {
+    'Dashboard': HomeIcon,
+    'Properties': BuildingIcon,
+    'Tenants': UsersIcon,
+    'Leases': DocumentIcon,
+    'Financials': DollarIcon,
+    'To-Do List': ChecklistIcon,
+  };
+
   const navItems: NavItem[] = [
-    { name: 'Dashboard', path: '/', icon: '🏠' },
-    { name: 'Properties', path: '/properties', icon: '🏢' },
-    { name: 'Tenants', path: '/tenants', icon: '👥' },
-    { name: 'Leases', path: '/leases', icon: '📄' },
-    { name: 'Financials', path: '/financials', icon: '💵' },
-    { name: 'To-Do List', path: '/todos', icon: '✅' },
+    { name: 'Dashboard', path: '/', icon: '' },
+    { name: 'Properties', path: '/properties', icon: '' },
+    { name: 'Tenants', path: '/tenants', icon: '' },
+    { name: 'Leases', path: '/leases', icon: '' },
+    { name: 'Financials', path: '/financials', icon: '' },
+    { name: 'To-Do List', path: '/todos', icon: '' },
   ];
 
   const SidebarContent: React.FC<{onLinkClick?: () => void, collapsed: boolean}> = ({ onLinkClick, collapsed }) => {
     const location = useLocation();
     return (
       <div className="flex flex-col h-full">
-        <h1 className={`font-bold text-white p-6 text-center ${collapsed ? 'text-xl py-4' : 'text-3xl'}`}>
-          {collapsed ? <span role="img" aria-label="Building Icon" className="text-2xl">🏢</span> : <>Zenith<span className="text-primary-light">Estate</span></>}
-        </h1>
-        <nav className={`mt-2 flex-grow ${collapsed ? 'space-y-1' : 'space-y-0'}`}>
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              onClick={onLinkClick}
-              title={collapsed ? item.name : undefined}
-              className={`flex items-center py-3 transition-colors duration-200
-                          ${collapsed ? 'px-3 justify-center' : 'px-6'}
-                          ${location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path)) 
-                            ? 'bg-primary-dark text-white font-semibold border-l-4 border-primary-light' 
-                            : 'text-neutral-200 hover:bg-primary-dark hover:text-white'
-                          }
-                          ${collapsed && (location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path))) ? 'border-l-4 border-primary-light' : collapsed ? 'border-l-4 border-transparent' : ''}
-                        `}
-            >
-              <span className={`inline-flex items-center justify-center text-xl ${!collapsed ? 'mr-4 w-6 h-6' : 'w-6 h-6'}`} role="img" aria-label={item.name}>{item.icon}</span>
-              {!collapsed && item.name}
-            </Link>
-          ))}
+        <div className={`p-5 ${collapsed ? 'px-3 py-4' : ''}`}>
+          <h1 className={`font-bold text-white text-center ${collapsed ? 'text-base' : 'text-2xl tracking-tight'}`}>
+            {collapsed ? <BuildingIcon className="h-6 w-6 mx-auto text-primary-light" /> : <>Zenith<span className="text-primary-light">Estate</span></>}
+          </h1>
+        </div>
+        <nav className="mt-1 flex-grow px-3 space-y-0.5">
+          {navItems.map((item) => {
+            const IconComponent = navIconMap[item.name];
+            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={onLinkClick}
+                title={collapsed ? item.name : undefined}
+                className={`flex items-center rounded-lg transition-all duration-200
+                            ${collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2.5'}
+                            ${isActive
+                              ? 'bg-primary/15 text-primary-light font-semibold'
+                              : 'text-neutral-400 hover:bg-white/5 hover:text-neutral-200'
+                            }`}
+              >
+                <span className={`inline-flex items-center justify-center flex-shrink-0 ${!collapsed ? 'mr-3' : ''}`}>
+                  {IconComponent && <IconComponent className={`h-[18px] w-[18px] ${isActive ? 'text-primary-light' : ''}`} />}
+                </span>
+                {!collapsed && <span className="text-sm">{item.name}</span>}
+              </Link>
+            );
+          })}
         </nav>
-        <div className={`p-4 mt-auto ${collapsed ? 'border-t border-neutral-700' : ''}`}>
-          <button 
-            onClick={toggleSidebarCollapse} 
+        <div className={`p-3 mt-auto border-t border-white/10`}>
+          <button
+            onClick={toggleSidebarCollapse}
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-            className="w-full flex items-center justify-center p-2 text-neutral-300 hover:bg-primary-dark hover:text-white rounded-md transition-colors"
+            className="w-full flex items-center justify-center gap-2 p-2 text-neutral-400 hover:bg-white/5 hover:text-neutral-200 rounded-lg transition-colors"
           >
-            <span className="text-xl" role="img" aria-label={isSidebarCollapsed ? "Expand" : "Collapse"}>{isSidebarCollapsed ? '⏩' : '⏪'}</span>
-             {!collapsed && <span className="ml-2 text-sm">{isSidebarCollapsed ? "Expand" : "Collapse"}</span>}
+            {isSidebarCollapsed ? <ChevronRightIcon className="h-4 w-4" /> : <ChevronLeftIcon className="h-4 w-4" />}
+            {!collapsed && <span className="text-xs">{isSidebarCollapsed ? "Expand" : "Collapse"}</span>}
           </button>
         </div>
       </div>
@@ -393,26 +409,26 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <div className="flex h-screen bg-neutral-100">
-        <aside className={`hidden md:flex flex-col bg-neutral-800 text-white fixed h-full shadow-lg transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+        <aside className={`hidden md:flex flex-col bg-neutral-900 text-white fixed h-full transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-[68px]' : 'w-60'}`}>
           <SidebarContent collapsed={isSidebarCollapsed} />
         </aside>
-        
+
         <div className="md:hidden fixed top-4 left-4 z-20">
-          <button onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} className="p-2 bg-primary text-white rounded-md text-2xl">
-            <span role="img" aria-label="Menu">☰</span>
+          <button onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} className="p-2.5 bg-neutral-900 text-white rounded-lg shadow-lg">
+            <MenuIcon className="h-5 w-5" />
           </button>
         </div>
         
         {isMobileSidebarOpen && (
           <div className="md:hidden fixed inset-0 z-30 flex">
-            <aside className="w-64 flex-col bg-neutral-800 text-white h-full shadow-lg">
+            <aside className="w-60 flex-col bg-neutral-900 text-white h-full shadow-2xl">
                <SidebarContent collapsed={false} onLinkClick={() => setIsMobileSidebarOpen(false)} />
             </aside>
-            <div className="flex-1 bg-black opacity-50" onClick={() => setIsMobileSidebarOpen(false)}></div>
+            <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)}></div>
           </div>
         )}
 
-        <main className={`flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
+        <main className={`flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'md:ml-[68px]' : 'md:ml-60'}`}>
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route path="/" element={<DashboardPage properties={properties} tenants={tenants} transactions={transactions} leases={leases} securityDepositTransactions={securityDepositTransactions} />} />

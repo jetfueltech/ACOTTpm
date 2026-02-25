@@ -25,10 +25,10 @@ interface CustomInputFieldProps {
   disabled?: boolean;
 }
 
-const InputField: React.FC<CustomInputFieldProps> = 
+const InputField: React.FC<CustomInputFieldProps> =
     ({label, id, type="text", value, onChange, required=false, min, step, children, placeholder, disabled = false}) => (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-neutral-700 mb-1">{label}{required && <span className="text-red-500">*</span>}</label>
+      <label htmlFor={id} className="block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">{label}{required && <span className="text-red-500">*</span>}</label>
       {children ? children : (
         React.createElement(type === 'textarea' ? 'textarea' : 'input', {
             type: type === 'textarea' ? undefined : type,
@@ -42,7 +42,7 @@ const InputField: React.FC<CustomInputFieldProps> =
             placeholder: placeholder,
             rows: type === 'textarea' ? 3 : undefined,
             disabled: disabled,
-            className: `mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ${disabled ? 'bg-neutral-100 cursor-not-allowed' : ''}`
+            className: `mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors ${disabled ? 'bg-neutral-50 cursor-not-allowed opacity-60' : ''}`
         })
       )}
     </div>
@@ -71,7 +71,7 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
         return {
             value: p.id,
             label: `${p.address}${hasActiveLease ? ' (Actively Leased)' : ''}`,
-            disabled: hasActiveLease && !(isEditing && leases?.find(l=>l.id === leaseIdToEdit)?.propertyId === p.id) 
+            disabled: hasActiveLease && !(isEditing && leases?.find(l=>l.id === leaseIdToEdit)?.propertyId === p.id)
         };
     }).sort((a,b) => a.label.localeCompare(b.label));
   }, [properties, leases, leaseIdToEdit, isEditing]);
@@ -156,23 +156,23 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
     }
     navigate('/leases');
   };
-  
+
   const parseOptionalFloat = (val: string | number) => val === '' ? '' : parseFloat(val.toString()) || '';
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl border border-neutral-300 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-neutral-800 mb-6">{isEditing ? 'Edit Lease' : 'Add New Lease'}</h2>
+    <div className="bg-white p-6 sm:p-8 rounded-xl border border-neutral-200 shadow-card max-w-2xl mx-auto">
+      <h2 className="text-xl font-bold text-neutral-900 mb-6">{isEditing ? 'Edit Lease' : 'Add New Lease'}</h2>
       {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField label="Property" id="propertyId" required value={propertyId} onChange={e => setPropertyId((e.target as HTMLSelectElement).value)}>
-            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
               <option value="" disabled>Select a property</option>
               {availablePropertiesForLease.map(opt => <option key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</option>)}
             </select>
           </InputField>
           <InputField label="Tenant" id="tenantId" required value={tenantId} onChange={e => setTenantId((e.target as HTMLSelectElement).value)}>
-            <select id="tenantId" name="tenantId" value={tenantId} onChange={e => setTenantId(e.target.value)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+            <select id="tenantId" name="tenantId" value={tenantId} onChange={e => setTenantId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
               <option value="" disabled>Select a tenant</option>
               {availableTenantsForLease.map(opt => <option key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</option>)}
             </select>
@@ -183,7 +183,7 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
           <InputField label="Lease Start Date" id="leaseStartDate" type="date" value={leaseStartDate} onChange={e => setLeaseStartDate((e.target as HTMLInputElement).value)} required />
           <InputField label="Lease End Date" id="leaseEndDate" type="date" value={leaseEndDate} onChange={e => setLeaseEndDate((e.target as HTMLInputElement).value)} required />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InputField label="Monthly Rent Amount (USD)" id="monthlyRentAmount" type="number" value={monthlyRentAmount} onChange={e => setMonthlyRentAmount(parseOptionalFloat((e.target as HTMLInputElement).value))} required min={0.01} step="0.01" placeholder="e.g., 1500" />
             <InputField label="Security Deposit (USD, Optional)" id="securityDepositAmount" type="number" value={securityDepositAmount} onChange={e => setSecurityDepositAmount(parseOptionalFloat((e.target as HTMLInputElement).value))} min={0} step="0.01" placeholder="e.g., 1500"/>
@@ -199,11 +199,11 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
 
         <div className="flex items-center justify-end space-x-3 pt-4">
           <button type="button" onClick={() => navigate('/leases')}
-            className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+            className="px-4 py-2.5 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors">
             Cancel
           </button>
           <button type="submit"
-            className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark">
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors">
             {isEditing ? 'Save Changes' : 'Add Lease'}
           </button>
         </div>

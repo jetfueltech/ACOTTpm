@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { TodoItem, TodoPriority, Property, OptionType } from '../types';
 import TodoItemCard from './TodoItemCard';
-// import { ClipboardCheckIcon, PlusCircleIcon } from '../constants'; // No longer needed
+import { PlusIcon, ClipboardIcon } from './icons';
 
 interface TodoPageProps {
   todoItems: TodoItem[];
@@ -25,7 +25,7 @@ const InputField: React.FC<{
         id: id, name: id, value: value, onChange: onChange, required: required,
         placeholder: placeholder,
         rows: type === 'textarea' ? 3 : undefined,
-        className: "mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+        className: "mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
       })
     )}
   </div>
@@ -53,7 +53,7 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
       setPriority(editingTodo.priority || 'medium');
       setPropertyId(editingTodo.propertyId || '');
       setNotes(editingTodo.notes || '');
-      setShowForm(true); 
+      setShowForm(true);
     } else {
       setText('');
       setDueDate('');
@@ -84,7 +84,7 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
     } else {
       onAddTodo(todoData);
     }
-    
+
     setEditingTodo(null);
     setShowForm(false);
   };
@@ -95,9 +95,9 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
 
   const handleCancelEdit = () => {
     setEditingTodo(null);
-    setShowForm(false); 
+    setShowForm(false);
   };
-  
+
   const toggleTodoCompletion = (todo: TodoItem) => {
     onUpdateTodo({ ...todo, isCompleted: !todo.isCompleted });
   };
@@ -107,7 +107,7 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
     { value: '', label: 'None (General Task)' },
     ...properties.map(p => ({ value: p.id, label: p.address }))
   ];
-  
+
   const priorityOptions: OptionType[] = [
     { value: 'low', label: 'Low' },
     { value: 'medium', label: 'Medium' },
@@ -130,9 +130,9 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
         if (a.dueDate && b.dueDate) {
           if (a.dueDate !== b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         } else if (a.dueDate) {
-          return -1; 
+          return -1;
         } else if (b.dueDate) {
-          return 1;  
+          return 1;
         }
       }
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -142,12 +142,12 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-3xl font-semibold text-neutral-800">To-Do List</h2>
+        <h2 className="text-2xl font-bold text-neutral-900">To-Do List</h2>
         <button
           onClick={() => { setEditingTodo(null); setShowForm(!showForm); }}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
         >
-          <span className="mr-2" role="img" aria-label="Add">➕</span>
+          <PlusIcon className="h-4 w-4" />
           {showForm && !editingTodo ? 'Close Form' : (editingTodo ? 'Cancel Edit' : 'Add New Task')}
         </button>
       </div>
@@ -161,36 +161,36 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField label="Due Date (Optional)" id="todo-dueDate" type="date" value={dueDate} onChange={e => setDueDate((e.target as HTMLInputElement).value)} />
               <InputField label="Priority" id="todo-priority" value={priority} onChange={e => setPriority((e.target as HTMLSelectElement).value as TodoPriority)}>
-                <select id="todo-priority" value={priority} onChange={e => setPriority(e.target.value as TodoPriority)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                <select id="todo-priority" value={priority} onChange={e => setPriority(e.target.value as TodoPriority)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
                   {priorityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
               </InputField>
             </div>
             <InputField label="Link to Property (Optional)" id="todo-propertyId" value={propertyId} onChange={e => setPropertyId((e.target as HTMLSelectElement).value)}>
-              <select id="todo-propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3 py-2 bg-white text-neutral-900 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+              <select id="todo-propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
                 {propertyOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </InputField>
             <InputField label="Notes (Optional)" id="todo-notes" type="textarea" value={notes} onChange={e => setNotes((e.target as HTMLTextAreaElement).value)} placeholder="Additional details..." />
             <div className="flex justify-end space-x-3">
-              <button type="button" onClick={handleCancelEdit} className="px-4 py-2 border border-neutral-300 rounded-md text-sm font-medium text-neutral-700 hover:bg-neutral-50">Cancel</button>
-              <button type="submit" className="px-6 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary-dark">
+              <button type="button" onClick={handleCancelEdit} className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">Cancel</button>
+              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">
                 {editingTodo ? 'Save Changes' : 'Add Task'}
               </button>
             </div>
           </form>
         </div>
       )}
-      
+
       <div className="mb-6 flex justify-center space-x-2">
         {(['all', 'active', 'completed'] as FilterStatus[]).map(status => (
             <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
-                        ${filterStatus === status 
-                            ? 'bg-primary text-white shadow-md' 
-                            : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-300'}`}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors
+                        ${filterStatus === status
+                            ? 'bg-neutral-900 text-white shadow-sm'
+                            : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200'}`}
             >
             {status.charAt(0).toUpperCase() + status.slice(1)}
             </button>
@@ -200,7 +200,9 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
 
       {filteredAndSortedTodos.length === 0 ? (
         <div className="text-center py-12">
-          <span className="text-5xl" role="img" aria-label="Clipboard with checkmark">📋</span>
+          <div className="mx-auto w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
+            <ClipboardIcon className="h-6 w-6 text-neutral-400" />
+          </div>
           <h3 className="mt-2 text-lg font-medium text-neutral-900">
             {filterStatus === 'all' && todoItems.length === 0 ? 'No tasks yet' : `No ${filterStatus} tasks`}
           </h3>

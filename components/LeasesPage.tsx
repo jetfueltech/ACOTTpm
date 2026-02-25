@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Lease, Property, Tenant, SecurityDepositTransaction } from '../types';
 import { formatDateForDisplay } from '../constants';
 import SecurityDepositModal from './SecurityDepositModal';
+import { PlusIcon, TrashIcon, EditIcon, DocumentIcon, ShieldIcon } from './icons';
 
 interface LeasesPageProps {
   leases: Lease[];
@@ -14,13 +15,13 @@ interface LeasesPageProps {
   deleteSecurityDepositTransaction: (id: string) => void;
 }
 
-const LeaseCard: React.FC<{ 
-    lease: Lease; 
-    propertyAddress?: string; 
-    tenantName?: string; 
-    onDelete: (id: string) => void; 
+const LeaseCard: React.FC<{
+    lease: Lease;
+    propertyAddress?: string;
+    tenantName?: string;
+    onDelete: (id: string) => void;
     onEdit: (id: string) => void;
-    onManageDeposits: (leaseId: string) => void; 
+    onManageDeposits: (leaseId: string) => void;
 }> = ({ lease, propertyAddress, tenantName, onDelete, onEdit, onManageDeposits }) => {
   const getStatus = (l: Lease): { text: string, color: string } => {
     const today = new Date();
@@ -31,13 +32,13 @@ const LeaseCard: React.FC<{
     if (l.isActive) return { text: 'Active', color: 'text-green-600' };
     if (endDate < today) return { text: 'Expired', color: 'text-red-600' };
     if (startDate > today) return { text: 'Future', color: 'text-blue-500' };
-    return { text: 'Inactive', color: 'text-neutral-500' }; 
+    return { text: 'Inactive', color: 'text-neutral-500' };
   };
 
   const status = getStatus(lease);
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-neutral-200 hover:border-indigo-300 transition-all duration-300 flex flex-col">
+    <div className="bg-white p-5 rounded-xl border border-neutral-200 hover:border-primary-light transition-all duration-300 flex flex-col">
       <div className="mb-3">
         <div className="flex justify-between items-start">
             <h3 className="text-lg font-semibold text-neutral-800">{propertyAddress || 'Unknown Property'}</h3>
@@ -47,7 +48,7 @@ const LeaseCard: React.FC<{
         </div>
         <p className="text-sm text-neutral-500">Tenant: {tenantName || 'Unknown Tenant'}</p>
       </div>
-      
+
       <div className="text-sm text-neutral-600 space-y-1 mb-4 flex-grow">
         <p><strong>Term:</strong> {formatDateForDisplay(lease.leaseStartDate)} - {formatDateForDisplay(lease.leaseEndDate)}</p>
         <p><strong>Rent:</strong> ${lease.monthlyRentAmount.toLocaleString()}/month</p>
@@ -59,21 +60,21 @@ const LeaseCard: React.FC<{
         <button onClick={() => onEdit(lease.id)} className="text-sm font-medium text-secondary hover:text-secondary-dark px-2 py-1">
           Edit Lease
         </button>
-        <button onClick={() => onManageDeposits(lease.id)} className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center px-2 py-1">
-            <span className="mr-1" role="img" aria-label="Deposits">💰</span> Manage Deposits
+        <button onClick={() => onManageDeposits(lease.id)} className="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1.5 px-2 py-1">
+            <ShieldIcon className="h-3.5 w-3.5" /> Manage Deposits
         </button>
         <button onClick={() => { if(window.confirm(`Are you sure you want to delete this lease for ${propertyAddress}? This will also remove associated security deposit records.`)) onDelete(lease.id) }}
-          className="text-sm font-medium text-red-500 hover:text-red-700 flex items-center px-2 py-1">
-          <span className="mr-1" role="img" aria-label="Delete">🗑️</span> Delete
+          className="text-sm font-medium text-red-500 hover:text-red-700 flex items-center gap-1.5 px-2 py-1">
+          <TrashIcon className="h-4 w-4" /> Delete
         </button>
       </div>
     </div>
   );
 };
 
-const LeasesPage: React.FC<LeasesPageProps> = ({ 
-    leases, properties, tenants, onDeleteLease, 
-    securityDepositTransactions, addSecurityDepositTransaction, deleteSecurityDepositTransaction 
+const LeasesPage: React.FC<LeasesPageProps> = ({
+    leases, properties, tenants, onDeleteLease,
+    securityDepositTransactions, addSecurityDepositTransaction, deleteSecurityDepositTransaction
 }) => {
   const navigate = useNavigate();
   const [selectedLeaseForDeposit, setSelectedLeaseForDeposit] = useState<Lease | null>(null);
@@ -100,27 +101,29 @@ const LeasesPage: React.FC<LeasesPageProps> = ({
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-semibold text-neutral-800">Lease Agreements</h2>
+        <h2 className="text-2xl font-bold text-neutral-900">Lease Agreements</h2>
         <Link
           to="/leases/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
         >
-          <span className="mr-2" role="img" aria-label="Add">➕</span>
+          <PlusIcon className="h-4 w-4" />
           Add New Lease
         </Link>
       </div>
 
       {leases.length === 0 ? (
          <div className="text-center py-12">
-            <span className="text-5xl" role="img" aria-label="Document">📄</span>
+            <div className="mx-auto w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
+              <DocumentIcon className="h-6 w-6 text-neutral-400" />
+            </div>
             <h3 className="mt-2 text-lg font-medium text-neutral-900">No leases yet</h3>
             <p className="mt-1 text-sm text-neutral-500">Get started by adding your first lease agreement.</p>
             <div className="mt-6">
                 <Link
                 to="/leases/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
                 >
-                <span className="mr-2" role="img" aria-label="Add">➕</span>
+                <PlusIcon className="h-4 w-4" />
                 Add New Lease
                 </Link>
             </div>
