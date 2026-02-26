@@ -102,7 +102,7 @@ const TransactionForm: React.FC<{
 
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 bg-white rounded-xl border border-neutral-200 space-y-6 mb-8">
+    <form onSubmit={handleSubmit} className="p-6 bg-white rounded-2xl shadow-card space-y-6 mb-8">
       <h3 className="text-xl font-semibold text-neutral-700">Add New Transaction</h3>
        {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -140,8 +140,8 @@ const TransactionForm: React.FC<{
       )}
       <TransactionFormInputField label="Description (Optional)" id="description" type="textarea" value={description} onChange={e => setDescription((e.target as HTMLTextAreaElement).value)} placeholder="e.g., Monthly rent for Unit 5, Kitchen faucet repair"/>
       <div className="flex justify-end space-x-3">
-        <button type="button" onClick={onClose} className="px-4 py-2.5 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors">Cancel</button>
-        <button type="submit" className="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark transition-colors">Add Transaction</button>
+        <button type="button" onClick={onClose} className="px-4 py-2.5 bg-surface text-neutral-600 hover:bg-surface-200 rounded-xl text-sm font-medium transition-colors">Cancel</button>
+        <button type="submit" className="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors">Add Transaction</button>
       </div>
     </form>
   );
@@ -173,7 +173,7 @@ const FinancialsPage: React.FC<FinancialsPageProps> = ({ transactions, propertie
         <h2 className="text-2xl font-bold text-neutral-900">Financials</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           {showForm ? 'Close Form' : 'Add Transaction'}
@@ -184,21 +184,21 @@ const FinancialsPage: React.FC<FinancialsPageProps> = ({ transactions, propertie
       {showForm && <TransactionForm properties={properties} onAddTransaction={onAddTransaction} onClose={() => setShowForm(false)} />}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-5 rounded-xl border border-neutral-200/80 border-l-4 border-l-emerald-500">
+        <div className="bg-white p-5 rounded-2xl shadow-card border-l-4 border-l-emerald-500">
           <p className="text-sm font-medium text-emerald-700">Total Income</p>
           <p className="text-2xl font-bold text-emerald-600">{formatCurrency(totalIncome)}</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-neutral-200/80 border-l-4 border-l-red-500">
+        <div className="bg-white p-5 rounded-2xl shadow-card border-l-4 border-l-red-500">
           <p className="text-sm font-medium text-red-700">Total Expenses</p>
           <p className="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-neutral-200/80 border-l-4 border-l-primary">
+        <div className="bg-white p-5 rounded-2xl shadow-card border-l-4 border-l-primary">
           <p className={`text-sm font-medium ${netProfit >= 0 ? 'text-primary' : 'text-primary'}`}>Net Profit/Loss</p>
           <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-primary' : 'text-primary'}`}>{formatCurrency(netProfit)}</p>
         </div>
       </div>
 
-      <div className="bg-white p-4 sm:p-6 rounded-xl border border-neutral-200">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-card">
         <h3 className="text-xl font-semibold text-neutral-700 mb-4">Transaction History</h3>
         {transactions.length === 0 ? (
            <div className="text-center py-12">

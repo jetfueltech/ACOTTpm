@@ -361,13 +361,13 @@ const App: React.FC = () => {
   const SidebarContent: React.FC<{onLinkClick?: () => void, collapsed: boolean}> = ({ onLinkClick, collapsed }) => {
     const location = useLocation();
     return (
-      <div className="flex flex-col h-full">
-        <div className={`p-5 ${collapsed ? 'px-3 py-4' : ''}`}>
-          <h1 className={`font-bold text-white text-center ${collapsed ? 'text-base' : 'text-2xl tracking-tight'}`}>
-            {collapsed ? <BuildingIcon className="h-6 w-6 mx-auto text-primary-light" /> : <>Zenith<span className="text-primary-light">Estate</span></>}
-          </h1>
+      <div className="flex flex-col h-full items-center py-6">
+        <div className="mb-8">
+          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center">
+            <BuildingIcon className="h-5 w-5 text-white" />
+          </div>
         </div>
-        <nav className="mt-1 flex-grow px-3 space-y-0.5">
+        <nav className="flex-grow flex flex-col items-center gap-1">
           {navItems.map((item) => {
             const IconComponent = navIconMap[item.name];
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -376,59 +376,92 @@ const App: React.FC = () => {
                 key={item.name}
                 to={item.path}
                 onClick={onLinkClick}
-                title={collapsed ? item.name : undefined}
-                className={`flex items-center rounded-lg transition-all duration-200
-                            ${collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2.5'}
+                title={item.name}
+                className={`relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-200
                             ${isActive
-                              ? 'bg-primary/15 text-primary-light font-semibold'
-                              : 'text-neutral-400 hover:bg-white/5 hover:text-neutral-200'
+                              ? 'bg-white text-neutral-800 shadow-card'
+                              : 'text-neutral-400 hover:bg-white/60 hover:text-neutral-600'
                             }`}
               >
-                <span className={`inline-flex items-center justify-center flex-shrink-0 ${!collapsed ? 'mr-3' : ''}`}>
-                  {IconComponent && <IconComponent className={`h-[18px] w-[18px] ${isActive ? 'text-primary-light' : ''}`} />}
-                </span>
-                {!collapsed && <span className="text-sm">{item.name}</span>}
+                {IconComponent && <IconComponent className="h-[18px] w-[18px]" />}
               </Link>
             );
           })}
         </nav>
-        <div className={`p-3 mt-auto border-t border-white/10`}>
+        <div className="mt-auto">
           <button
             onClick={toggleSidebarCollapse}
-            title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-            className="w-full flex items-center justify-center gap-2 p-2 text-neutral-400 hover:bg-white/5 hover:text-neutral-200 rounded-lg transition-colors"
+            title="Settings"
+            className="flex items-center justify-center w-11 h-11 rounded-2xl text-neutral-400 hover:bg-white/60 hover:text-neutral-600 transition-all duration-200"
           >
-            {isSidebarCollapsed ? <ChevronRightIcon className="h-4 w-4" /> : <ChevronLeftIcon className="h-4 w-4" />}
-            {!collapsed && <span className="text-xs">{isSidebarCollapsed ? "Expand" : "Collapse"}</span>}
+            <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </button>
         </div>
       </div>
     );
   };
 
+  const MobileSidebarContent: React.FC<{onLinkClick: () => void}> = ({ onLinkClick }) => {
+    const location = useLocation();
+    return (
+      <div className="flex flex-col h-full py-6 px-4">
+        <div className="flex items-center gap-3 mb-8 px-2">
+          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
+            <BuildingIcon className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-lg font-bold text-neutral-800">ZenithEstate</span>
+        </div>
+        <nav className="flex-grow flex flex-col gap-1">
+          {navItems.map((item) => {
+            const IconComponent = navIconMap[item.name];
+            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={onLinkClick}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                            ${isActive
+                              ? 'bg-primary text-white font-semibold'
+                              : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'
+                            }`}
+              >
+                {IconComponent && <IconComponent className="h-[18px] w-[18px]" />}
+                <span className="text-sm">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    );
+  };
+
   return (
     <HashRouter>
-      <div className="flex h-screen bg-neutral-100">
-        <aside className={`hidden md:flex flex-col bg-neutral-900 text-white fixed h-full transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-[68px]' : 'w-60'}`}>
-          <SidebarContent collapsed={isSidebarCollapsed} />
+      <div className="flex h-screen bg-surface">
+        <aside className="hidden md:flex flex-col bg-surface-100/80 backdrop-blur-sm fixed h-full w-[72px] border-r border-neutral-200/60 z-10">
+          <SidebarContent collapsed={true} />
         </aside>
 
         <div className="md:hidden fixed top-4 left-4 z-20">
-          <button onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} className="p-2.5 bg-neutral-900 text-white rounded-lg shadow-lg">
+          <button onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} className="p-2.5 bg-white text-neutral-600 rounded-xl shadow-card hover:shadow-card-hover transition-shadow">
             <MenuIcon className="h-5 w-5" />
           </button>
         </div>
-        
+
         {isMobileSidebarOpen && (
           <div className="md:hidden fixed inset-0 z-30 flex">
-            <aside className="w-60 flex-col bg-neutral-900 text-white h-full shadow-2xl">
-               <SidebarContent collapsed={false} onLinkClick={() => setIsMobileSidebarOpen(false)} />
+            <aside className="w-64 bg-white h-full shadow-modal">
+               <MobileSidebarContent onLinkClick={() => setIsMobileSidebarOpen(false)} />
             </aside>
-            <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)}></div>
+            <div className="flex-1 bg-black/20 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)}></div>
           </div>
         )}
 
-        <main className={`flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'md:ml-[68px]' : 'md:ml-60'}`}>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto md:ml-[72px]">
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route path="/" element={<DashboardPage properties={properties} tenants={tenants} transactions={transactions} leases={leases} securityDepositTransactions={securityDepositTransactions} />} />

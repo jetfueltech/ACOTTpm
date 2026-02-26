@@ -95,10 +95,10 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white p-6 rounded-2xl shadow-modal w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-neutral-800">Manage Security Deposits</h2>
-          <button onClick={onClose} className="p-1 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100 transition-colors">
+          <button onClick={onClose} className="p-1.5 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100 transition-colors">
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
@@ -110,7 +110,7 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
 
         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-4">
             {/* Form to Add New Security Deposit Transaction */}
-            <form onSubmit={handleSubmit} className="p-4 border border-neutral-200 rounded-xl bg-primary-light/10">
+            <form onSubmit={handleSubmit} className="p-4 rounded-2xl bg-surface">
                 <h3 className="text-md font-semibold text-neutral-700 mb-3">Log New Deposit Transaction</h3>
                 {error && <p className="mb-2 text-xs text-red-600 bg-red-100 p-2 rounded">{error}</p>}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -127,7 +127,7 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
                     <InputField label="Date" id="sdt-date" type="date" value={date} onChange={e => setDate((e.target as HTMLInputElement).value)} required />
                      <InputField label="Notes (Optional)" id="sdt-notes" type="text" value={notes} onChange={e => setNotes((e.target as HTMLInputElement).value)} placeholder="e.g., Initial collection, Partial refund" />
                 </div>
-                <button type="submit" className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">
+                <button type="submit" className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors">
                     <PlusIcon className="h-4 w-4" /> Log Transaction
                 </button>
             </form>
@@ -166,7 +166,7 @@ const SecurityDepositModal: React.FC<SecurityDepositModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            className="px-4 py-2 rounded-xl bg-surface text-sm font-medium text-neutral-700 hover:bg-surface-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
           >
             Close
           </button>

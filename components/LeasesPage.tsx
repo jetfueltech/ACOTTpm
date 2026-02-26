@@ -38,7 +38,7 @@ const LeaseCard: React.FC<{
   const status = getStatus(lease);
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-neutral-200 hover:border-primary-light transition-all duration-300 flex flex-col">
+    <div className="bg-white p-5 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col">
       <div className="mb-3">
         <div className="flex justify-between items-start">
             <h3 className="text-lg font-semibold text-neutral-800">{propertyAddress || 'Unknown Property'}</h3>
@@ -104,7 +104,7 @@ const LeasesPage: React.FC<LeasesPageProps> = ({
         <h2 className="text-2xl font-bold text-neutral-900">Lease Agreements</h2>
         <Link
           to="/leases/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           Add New Lease
@@ -121,7 +121,7 @@ const LeasesPage: React.FC<LeasesPageProps> = ({
             <div className="mt-6">
                 <Link
                 to="/leases/new"
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
                 >
                 <PlusIcon className="h-4 w-4" />
                 Add New Lease

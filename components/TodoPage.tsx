@@ -145,7 +145,7 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
         <h2 className="text-2xl font-bold text-neutral-900">To-Do List</h2>
         <button
           onClick={() => { setEditingTodo(null); setShowForm(!showForm); }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           {showForm && !editingTodo ? 'Close Form' : (editingTodo ? 'Cancel Edit' : 'Add New Task')}
@@ -153,7 +153,7 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
       </div>
 
       {showForm && (
-        <div className="p-6 bg-white rounded-xl border border-neutral-200 space-y-6 mb-8 max-w-2xl mx-auto">
+        <div className="p-6 bg-white rounded-2xl shadow-card space-y-6 mb-8 max-w-2xl mx-auto">
           <h3 className="text-xl font-semibold text-neutral-700">{editingTodo ? 'Edit Task' : 'Add New Task'}</h3>
           {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
           <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -173,8 +173,8 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
             </InputField>
             <InputField label="Notes (Optional)" id="todo-notes" type="textarea" value={notes} onChange={e => setNotes((e.target as HTMLTextAreaElement).value)} placeholder="Additional details..." />
             <div className="flex justify-end space-x-3">
-              <button type="button" onClick={handleCancelEdit} className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">Cancel</button>
-              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors">
+              <button type="button" onClick={handleCancelEdit} className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl bg-surface text-neutral-600 hover:bg-surface-200 transition-colors">Cancel</button>
+              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors">
                 {editingTodo ? 'Save Changes' : 'Add Task'}
               </button>
             </div>
@@ -187,10 +187,10 @@ const TodoPage: React.FC<TodoPageProps> = ({ todoItems, properties, onAddTodo, o
             <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors
+            className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors
                         ${filterStatus === status
-                            ? 'bg-neutral-900 text-white shadow-sm'
-                            : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200'}`}
+                            ? 'bg-neutral-900 text-white rounded-xl'
+                            : 'bg-white text-neutral-500 rounded-xl shadow-card hover:shadow-card-hover'}`}
             >
             {status.charAt(0).toUpperCase() + status.slice(1)}
             </button>

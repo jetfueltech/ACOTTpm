@@ -31,7 +31,7 @@ const InputField: React.FC<CustomInputFieldProps> =
         value={value}
         onChange={onChange}
         required={required}
-        className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
+        className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
       />
       )}
     </div>
@@ -106,7 +106,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ onSubmit, properties, tenants }
 
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl border border-neutral-200 shadow-card max-w-lg mx-auto">
+    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-card max-w-lg mx-auto">
       <h2 className="text-xl font-bold text-neutral-900 mb-6">{isEditing ? 'Edit Tenant' : 'Add New Tenant'}</h2>
       {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -115,7 +115,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ onSubmit, properties, tenants }
         <InputField label="Phone Number (Optional)" id="phone" type="tel" value={phone} onChange={e => setPhone((e.target as HTMLInputElement).value)} />
 
         <InputField label="Assign to Property" id="propertyId" required value={propertyId} onChange={e => setPropertyId((e.target as HTMLSelectElement).value)}>
-            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className={`mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors ${availableProperties.length === 0 && !isEditing ? 'bg-neutral-50 cursor-not-allowed opacity-60' : ''}`} disabled={availableProperties.length === 0 && !isEditing}>
+            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className={`mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors ${availableProperties.length === 0 && !isEditing ? 'bg-neutral-50 cursor-not-allowed opacity-60' : ''}`} disabled={availableProperties.length === 0 && !isEditing}>
                 { availableProperties.length > 0 ? (
                     availableProperties.map(propOpt => <option key={propOpt.value} value={propOpt.value}>{propOpt.label}</option>)
                 ) : (
@@ -144,13 +144,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ onSubmit, properties, tenants }
           <button
             type="button"
             onClick={() => navigate('/tenants')}
-            className="px-4 py-2.5 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors"
+            className="px-4 py-2.5 bg-surface hover:bg-surface-200 rounded-xl text-sm font-medium text-neutral-600 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors"
           >
             {isEditing ? 'Save Changes' : 'Add Tenant'}
           </button>

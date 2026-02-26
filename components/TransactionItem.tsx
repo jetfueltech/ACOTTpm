@@ -18,7 +18,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, properti
   };
 
   return (
-    <li className="py-4 px-2 hover:bg-neutral-50 rounded-md transition-colors duration-150">
+    <li className="py-4 px-2 hover:bg-surface-50 rounded-xl transition-colors duration-150">
       <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center">
         <div className="md:col-span-1 text-sm text-neutral-600">{formatDateForDisplay(transaction.date)}</div>
         <div className="md:col-span-2">

@@ -42,7 +42,7 @@ const InputField: React.FC<CustomInputFieldProps> =
             placeholder: placeholder,
             rows: type === 'textarea' ? 3 : undefined,
             disabled: disabled,
-            className: `mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors ${disabled ? 'bg-neutral-50 cursor-not-allowed opacity-60' : ''}`
+            className: `mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors ${disabled ? 'bg-neutral-50 cursor-not-allowed opacity-60' : ''}`
         })
       )}
     </div>
@@ -160,19 +160,19 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
   const parseOptionalFloat = (val: string | number) => val === '' ? '' : parseFloat(val.toString()) || '';
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl border border-neutral-200 shadow-card max-w-2xl mx-auto">
+    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-card max-w-2xl mx-auto">
       <h2 className="text-xl font-bold text-neutral-900 mb-6">{isEditing ? 'Edit Lease' : 'Add New Lease'}</h2>
       {error && <p className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField label="Property" id="propertyId" required value={propertyId} onChange={e => setPropertyId((e.target as HTMLSelectElement).value)}>
-            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
+            <select id="propertyId" name="propertyId" value={propertyId} onChange={e => setPropertyId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
               <option value="" disabled>Select a property</option>
               {availablePropertiesForLease.map(opt => <option key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</option>)}
             </select>
           </InputField>
           <InputField label="Tenant" id="tenantId" required value={tenantId} onChange={e => setTenantId((e.target as HTMLSelectElement).value)}>
-            <select id="tenantId" name="tenantId" value={tenantId} onChange={e => setTenantId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
+            <select id="tenantId" name="tenantId" value={tenantId} onChange={e => setTenantId(e.target.value)} className="mt-1 block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors">
               <option value="" disabled>Select a tenant</option>
               {availableTenantsForLease.map(opt => <option key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</option>)}
             </select>
@@ -199,11 +199,11 @@ const LeaseForm: React.FC<LeaseFormProps> = ({ onSubmit, properties, tenants, le
 
         <div className="flex items-center justify-end space-x-3 pt-4">
           <button type="button" onClick={() => navigate('/leases')}
-            className="px-4 py-2.5 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors">
+            className="px-4 py-2.5 bg-surface hover:bg-surface-200 rounded-xl text-sm font-medium text-neutral-600 transition-colors">
             Cancel
           </button>
           <button type="submit"
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors">
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors">
             {isEditing ? 'Save Changes' : 'Add Lease'}
           </button>
         </div>

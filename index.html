@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-T">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zenith Estate Manager</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,14 +11,20 @@
         extend: {
           colors: {
             primary: {
-              light: '#38bdf8',
-              DEFAULT: '#0ea5e9',
-              dark: '#0284c7',
+              light: '#60a5fa',
+              DEFAULT: '#3b82f6',
+              dark: '#2563eb',
             },
             secondary: {
-              light: '#2dd4bf',
-              DEFAULT: '#14b8a6',
-              dark: '#0f9688',
+              light: '#34d399',
+              DEFAULT: '#10b981',
+              dark: '#059669',
+            },
+            surface: {
+              DEFAULT: '#f0f2f8',
+              50: '#f7f8fc',
+              100: '#eef0f7',
+              200: '#e4e7f1',
             },
             neutral: {
               50: '#f8fafc',
@@ -38,15 +43,21 @@
             sans: ['Inter', 'system-ui', 'sans-serif'],
           },
           boxShadow: {
-            'card': '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)',
-            'card-hover': '0 4px 12px 0 rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06)',
+            'card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+            'card-hover': '0 8px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.03)',
+            'nav': '0 0 20px rgba(0, 0, 0, 0.06)',
+            'modal': '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08)',
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem',
           }
         }
       }
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="importmap">
 {
   "imports": {
@@ -62,7 +73,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-neutral-100">
+<body class="bg-surface">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

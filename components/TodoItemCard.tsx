@@ -26,8 +26,8 @@ const TodoItemCard: React.FC<TodoItemCardProps> = ({ todoItem, properties, onTog
 
 
   return (
-    <div className={`p-4 rounded-lg border flex items-start space-x-3 transition-all duration-300
-                    ${todoItem.isCompleted ? 'bg-neutral-50 opacity-70 border-neutral-200' : 'bg-white hover:bg-neutral-50 border-neutral-200'}
+    <div className={`p-4 rounded-2xl shadow-card flex items-start space-x-3 transition-all duration-300
+                    ${todoItem.isCompleted ? 'bg-neutral-50 opacity-70' : 'bg-white'}
                     border-l-4 ${priorityStyles.borderColor}`}>
       <input
         type="checkbox"

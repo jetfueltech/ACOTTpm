@@ -98,10 +98,13 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, tenants, le
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-neutral-900">Properties</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-neutral-900">Properties</h2>
+          <p className="text-sm text-neutral-400 mt-0.5">Manage your real estate portfolio</p>
+        </div>
         <Link
           to="/properties/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           Add Property
@@ -109,20 +112,22 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, tenants, le
       </div>
 
       {properties.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
-            <BuildingIcon className="h-6 w-6 text-neutral-400" />
-          </div>
-          <h3 className="text-base font-semibold text-neutral-900">No properties yet</h3>
-          <p className="mt-1 text-sm text-neutral-500">Get started by adding your first property.</p>
-          <div className="mt-5">
-            <Link
-              to="/properties/new"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add New Property
-            </Link>
+        <div className="bg-white rounded-2xl shadow-card p-12">
+          <div className="text-center">
+            <div className="mx-auto w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
+              <BuildingIcon className="h-6 w-6 text-neutral-400" />
+            </div>
+            <h3 className="text-base font-semibold text-neutral-900">No properties yet</h3>
+            <p className="mt-1 text-sm text-neutral-500">Get started by adding your first property.</p>
+            <div className="mt-5">
+              <Link
+                to="/properties/new"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Add New Property
+              </Link>
+            </div>
           </div>
         </div>
       ) : (

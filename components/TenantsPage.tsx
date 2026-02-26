@@ -24,7 +24,7 @@ const TenantCard: React.FC<{
 
 
     return (
-      <div className="bg-white p-6 rounded-xl border border-neutral-200 hover:bg-neutral-50 transition-colors duration-200">
+      <div className="bg-white p-6 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300">
         <h3 className="text-xl font-semibold text-neutral-800 mb-2">{tenant.name}</h3>
         <div className="text-sm text-neutral-600 space-y-1 mb-4">
           <p><strong>Email:</strong> {tenant.email}</p>
@@ -73,7 +73,7 @@ const TenantsPage: React.FC<TenantsPageProps> = ({ tenants, properties, leases, 
         <h2 className="text-2xl font-bold text-neutral-900">Tenants</h2>
         <Link
           to="/tenants/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           Add Tenant
@@ -90,7 +90,7 @@ const TenantsPage: React.FC<TenantsPageProps> = ({ tenants, properties, leases, 
             <div className="mt-6">
                 <Link
                 to="/tenants/new"
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-colors"
                 >
                 <PlusIcon className="h-4 w-4" />
                 Add New Tenant

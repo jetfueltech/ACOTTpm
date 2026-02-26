@@ -13,7 +13,7 @@ interface PropertyFinancePageProps {
 
 const StatCard: React.FC<{ title: string; value: string | number; subValue?: string; small?: boolean; className?: string }> =
   ({ title, value, subValue, small, className }) => (
-  <div className={`bg-white p-3 md:p-4 rounded-xl border border-neutral-200/80 ${className || ''}`}>
+  <div className={`bg-white p-3 md:p-4 rounded-2xl shadow-card ${className || ''}`}>
     <p className={`text-xs font-medium text-neutral-500 uppercase tracking-wider ${small ? 'mb-0.5' : 'mb-1'}`}>{title}</p>
     <p className={`font-bold text-neutral-900 ${small ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`}>{value}</p>
     {subValue && <p className="text-xs text-neutral-400 break-words mt-0.5">{subValue}</p>}
@@ -256,7 +256,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   return (
-    <div className="space-y-6 md:space-y-8 p-3 sm:p-4 md:p-6 bg-neutral-50 rounded-lg border border-neutral-200">
+    <div className="space-y-6 md:space-y-8 p-3 sm:p-4 md:p-6 bg-surface-50 rounded-2xl">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-neutral-800 break-words">
           Property Finances: <span className="text-primary">{currentProperty.address}</span>
@@ -265,7 +265,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
       </div>
 
       {(currentProperty.parcelId || currentProperty.countyAppraiserUrl) && (
-        <div className="bg-white rounded-xl border border-neutral-200 px-5 py-3.5 flex flex-wrap gap-x-8 gap-y-3">
+        <div className="bg-white rounded-2xl shadow-card px-5 py-3.5 flex flex-wrap gap-x-8 gap-y-3">
           {currentProperty.parcelId && (
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-100">
@@ -311,7 +311,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
         <StatCard title="ROI on Cash (Actual)" value={roiOnCashInvestment !== null ? `${roiOnCashInvestment.toFixed(1)}%` : 'N/A'} subValue={initialCashInvestment ? `Cash Invest: ${formatCurrency(initialCashInvestment)}` : 'Cash N/A'} small/>
       </div>
 
-       <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
+       <div className="bg-white p-3 md:p-6 rounded-2xl shadow-card">
         <h3 className="text-md md:text-lg font-semibold text-neutral-700 mb-3">Investment & Loan Summary</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             <StatCard title="Initial Cash Investment" value={formatCurrency(initialCashInvestment)} small />
@@ -323,8 +323,8 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
         </div>
       </div>
 
-      <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
-        <button 
+      <div className="bg-white p-3 md:p-6 rounded-2xl shadow-card">
+        <button
             onClick={() => setIsProjectionsOpen(!isProjectionsOpen)}
             className="w-full flex justify-between items-center text-left text-md md:text-lg font-semibold text-neutral-700 mb-3 focus:outline-none"
             aria-expanded={isProjectionsOpen}
@@ -346,7 +346,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white p-3 md:p-6 rounded-2xl shadow-card">
            <h3 className="text-md md:text-lg font-semibold text-neutral-700 mb-3">Actual Rent Collected ({new Date().getFullYear()})</h3>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3">
             {monthNames.map((monthName, index) => (
@@ -358,7 +358,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
           </div>
         </div>
       
-        <div className="bg-white p-3 md:p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white p-3 md:p-6 rounded-2xl shadow-card">
           <h3 className="text-md md:text-lg font-semibold text-neutral-700 mb-3">Actual Expenses YTD ({new Date().getFullYear()})</h3>
           {categorizedExpenses.length > 0 ? (
             <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar pr-2">
@@ -391,7 +391,7 @@ const PropertyFinancePage: React.FC<PropertyFinancePageProps> = ({ properties, t
           )}
         </div>
       </div>
-      <div className="bg-white p-5 md:p-6 rounded-xl border border-neutral-200">
+      <div className="bg-white p-5 md:p-6 rounded-2xl shadow-card">
         <PropertyDocuments propertyId={currentProperty.id} />
       </div>
 

@@ -20,7 +20,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'media',       label: 'Media',       icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
 ];
 
-const inputCls = "block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors placeholder:text-neutral-400";
+const inputCls = "block w-full px-3.5 py-2.5 bg-white text-neutral-900 border border-neutral-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors placeholder:text-neutral-400";
 const labelCls = "block text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1.5";
 
 interface FieldProps {
@@ -229,8 +229,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-neutral-200 shadow-card overflow-hidden">
-        <div className="flex overflow-x-auto border-b border-neutral-200 bg-neutral-50/60">
+      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+        <div className="flex overflow-x-auto border-b border-neutral-200 bg-surface">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -460,7 +460,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
             )}
           </div>
 
-          <div className="flex items-center justify-between px-6 py-4 bg-neutral-50/60 border-t border-neutral-200">
+          <div className="flex items-center justify-between px-6 py-4 bg-surface border-t border-surface-200">
             <div className="flex gap-1">
               {TABS.map((tab, i) => (
                 <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
@@ -470,10 +470,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, properties }) => 
               ))}
             </div>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => navigate('/properties')} className="px-4 py-2 text-sm font-medium text-neutral-600 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+              <button type="button" onClick={() => navigate('/properties')} className="px-4 py-2 text-sm font-medium text-neutral-600 bg-surface hover:bg-surface-200 rounded-xl transition-colors">
                 Cancel
               </button>
-              <button type="submit" className="px-5 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors shadow-sm">
+              <button type="submit" className="px-5 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors shadow-sm">
                 {isEditing ? 'Save Changes' : 'Add Property'}
               </button>
             </div>
